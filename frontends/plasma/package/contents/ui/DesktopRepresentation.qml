@@ -6,8 +6,7 @@ import org.kde.plasma.extras as PlasmaExtras
 import org.kde.plasma.plasmoid
 
 // Always-visible representation for the desktop (Planar). The layout adapts to the
-// widget size: gauge (small/square), list (medium) or grid (wide), or is forced
-// through the "desktopLayout" setting.
+// widget size; the default keeps a battery ring per device always visible.
 Item {
     id: desk
 
@@ -20,11 +19,9 @@ Item {
     readonly property var absent: host.showOutOfRange ? host.absentDevices : []
     readonly property int total: present.length + absent.length
     readonly property string layoutMode: {
+        if (host.displayStyle === "bars") return "rings"
         if (configured === "gauge" || configured === "list" || configured === "grid") return configured
-        if (total <= 1 && width < gu * 30) return "gauge"
-        if (width < gu * 13 || (width / Math.max(1, height) < 1.15 && height < gu * 16)) return "gauge"
-        if (width >= gu * 30) return "grid"
-        return "list"
+        return "rings"
     }
     // Lowest present device is the gauge hero; the rest become chips.
     readonly property var hero: {
@@ -40,10 +37,10 @@ Item {
     readonly property var others: present.filter(d => d !== hero).concat(absent)
     readonly property bool hasContent: host.hasData && total > 0
 
-    Layout.minimumWidth: gu * 9
-    Layout.minimumHeight: gu * 8
-    Layout.preferredWidth: gu * 16
-    Layout.preferredHeight: gu * 12
+    Layout.minimumWidth: gu * 14
+    Layout.minimumHeight: gu * 10
+    Layout.preferredWidth: gu * 26
+    Layout.preferredHeight: gu * 20
 
     ColumnLayout {
         anchors.fill: parent
@@ -149,6 +146,21 @@ Item {
                 iconName: "battery-missing"
                 text: i18n("No battery-powered peripherals found")
                 explanation: desk.height > desk.gu * 10 ? i18n("Run “perigauge doctor” in a terminal to see what was detected.") : ""
+            }
+
+            PlasmaComponents3.ScrollView {
+                id: ringScroll
+                anchors.fill: parent
+                visible: desk.hasContent && desk.layoutMode === "rings"
+                contentWidth: availableWidth
+                PlasmaComponents3.ScrollBar.horizontal.policy: PlasmaComponents3.ScrollBar.AlwaysOff
+
+                BatteryGrid {
+                    width: ringScroll.availableWidth
+                    columnBasis: Math.max(1, ringScroll.width - Kirigami.Units.gridUnit)
+                    host: desk.host
+                    devices: desk.present.concat(desk.absent)
+                }
             }
 
             // Gauge: hero device + chips

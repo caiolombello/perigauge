@@ -25,23 +25,38 @@ PlasmoidItem {
     readonly property var absentDevices: visibleDevices.filter(d => d.present === false)
     readonly property var issues: snapshot.issues || []
     readonly property bool showOutOfRange: Plasmoid.configuration.showOutOfRange
+    readonly property string displayStyle: Plasmoid.configuration.displayStyle === "bars" ? "bars" : "rings"
 
     // Outside panels (Planar on the desktop, Application in plasmawindowed) the full
     // representation is shown in place; in a panel the compact item plus popup is used.
-    // Below the switch size the desktop widget collapses to the compact item as well.
     readonly property bool onDesktop: Plasmoid.formFactor !== PlasmaCore.Types.Horizontal
                                       && Plasmoid.formFactor !== PlasmaCore.Types.Vertical
+    preferredRepresentation: onDesktop ? fullRepresentation : compactRepresentation
     switchWidth: Kirigami.Units.gridUnit * 6
     switchHeight: Kirigami.Units.gridUnit * 6
     Plasmoid.backgroundHints: PlasmaCore.Types.DefaultBackground | PlasmaCore.Types.ConfigurableBackground
 
     Plasmoid.icon: "perigauge"
-    Plasmoid.status: presentDevices.length > 0 ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.PassiveStatus
+    Plasmoid.status: presentDevices.length > 0 || (showOutOfRange && absentDevices.length > 0)
+        ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.PassiveStatus
     toolTipMainText: "PeriGauge"
     toolTipSubText: tooltipText()
 
+    Plasmoid.contextualActions: [
+        PlasmaCore.Action {
+            text: root.displayStyle === "bars" ? i18n("Switch to circles (gauge)") : i18n("Switch to battery bars")
+            icon.name: "view-refresh"
+            onTriggered: root.setDisplayStyle(root.displayStyle === "bars" ? "rings" : "bars")
+        }
+    ]
+
     // ---- helpers -----------------------------------------------------
     function isNum(v) { return typeof v === "number" && isFinite(v) }
+
+    function setDisplayStyle(style) {
+        Plasmoid.configuration.displayStyle = style
+        if (onDesktop) Plasmoid.configuration.desktopLayout = "auto"
+    }
 
     function kindIcon(kind) {
         switch (kind) {
@@ -136,6 +151,25 @@ PlasmoidItem {
         return parts.join(", ")
     }
 
+    function componentA11y(dev, component) {
+        const inf = info(dev)
+        const pct = isNum(component.percent) ? Math.round(component.percent) : null
+        const parts = [dev.name, componentLabel(component.id),
+            pct === null ? i18n("level unknown") : i18n("%1 percent", pct)]
+        if (pct !== null) parts.push(severityText(severityOf(pct, null)))
+        if (dev.present === false) {
+            parts.push(i18n("out of range"), i18n("last seen %1", relativeTime(dev.updated_at, now)))
+        } else if (inf.stale) {
+            parts.push(i18n("last known reading"))
+        } else if (component.charging === "charging") {
+            parts.push(i18n("charging"))
+        } else if (component.charging === "full") {
+            parts.push(i18n("Fully charged"))
+        }
+        if (inf.error !== "") parts.push(inf.error)
+        return parts.join(", ")
+    }
+
     function severityText(sev) {
         switch (sev) {
         case "critical": return i18n("Critical")
@@ -172,39 +206,69 @@ PlasmoidItem {
 
     function tooltipText() {
         if (errorMessage && !hasData) return errorMessage
-        if (presentDevices.length === 0) return i18n("No battery-powered peripherals found")
-        return presentDevices.map(d => {
+        const devices = presentDevices.concat(showOutOfRange ? absentDevices : [])
+        if (devices.length === 0) return i18n("No battery-powered peripherals found")
+        return devices.map(d => {
             const i = info(d)
             let t = d.name + ": " + i.pctText
-            if (i.charging) t += " · " + i18n("charging")
-            if (i.stale) t += " · " + i18n("last reading")
+            if (d.present === false) t += " · " + i18n("out of range")
+            else if (i.stale) t += " · " + i18n("last reading")
+            else if (i.charging) t += " · " + i18n("charging")
             return t
         }).join("\n")
     }
 
+    // Shared entries keep component readings identical on the desktop and panel.
+    function batteryEntries(devices) {
+        const result = []
+        for (const dev of devices) {
+            const inf = info(dev)
+            const parts = dev.components && dev.components.length > 0 ? Array.from(dev.components) : [null]
+            for (const part of parts) {
+                const pct = part ? (isNum(part.percent) ? Math.round(part.percent) : null) : inf.pct
+                const charging = part ? part.charging === "charging" : inf.charging
+                const label = part ? componentLabel(part.id) : dev.name
+                result.push({
+                    name: part ? dev.name + " · " + label : dev.name,
+                    deviceName: dev.name, label: label, component: part !== null,
+                    pct: pct, text: part ? (pct === null ? "—" : pct + "%") : inf.pctText,
+                    icon: part && part.id === "case" ? "battery-case" : inf.icon,
+                    severity: part ? severityOf(pct, null) : inf.severity,
+                    charging: charging, stale: inf.stale, absent: dev.present === false,
+                    estimated: !part && (dev.battery || {}).estimated === true,
+                    status: dev.present === false ? i18n("Out of range")
+                        : inf.stale ? i18n("Last reading")
+                        : charging ? i18n("Charging")
+                        : pct === null ? (part ? severityText("unknown") : inf.stateText) : "",
+                    description: part ? componentA11y(dev, part) : a11y(dev)
+                })
+            }
+        }
+        return result
+    }
+
     // Entries shown in the panel according to the configured mode.
     function compactEntries() {
-        let list = presentDevices.map(d => {
-            const i = info(d)
-            return { icon: i.icon, text: i.pctText, severity: i.severity, charging: i.charging,
-                     stale: i.stale, pct: i.pct === null ? 101 : i.pct, name: d.name }
+        let list = batteryEntries(presentDevices.concat(showOutOfRange ? absentDevices : [])).map(e => {
+            return Object.assign({}, e, {
+                pct: e.pct === null ? 101 : e.pct,
+                text: e.component ? e.label + " " + e.text : e.text
+            })
         })
         if (list.length === 0) return []
         let mode = Plasmoid.configuration.compactMode
         if (mode === "icon") {
             const rank = { critical: 3, warn: 2, ok: 1, unknown: 0 }
             const worst = list.reduce((a, b) => rank[b.severity] > rank[a.severity] ? b : a)
-            return [{ icon: "", text: "", severity: worst.severity, charging: list.some(e => e.charging),
-                      stale: list.every(e => e.stale), pct: 0, name: "PeriGauge" }]
+            return [{ icon: "", text: "", severity: worst.severity,
+                      charging: list.some(e => e.charging && !e.stale && !e.absent),
+                      stale: list.every(e => e.stale), pct: 101, name: "PeriGauge",
+                      description: "PeriGauge, " + worst.description }]
         }
-        const auto = mode !== "all" && mode !== "lowest"
-        if ((auto && list.length > 3) || mode === "lowest") {
-            const low = list.reduce((a, b) => b.pct < a.pct ? b : a)
-            const result = [low]
-            if (auto && list.length > 1)
-                result.push({ icon: "", text: "+" + (list.length - 1), severity: "ok", charging: false,
-                              stale: false, pct: 101, name: i18n("%1 more devices", list.length - 1) })
-            return result
+        if (mode === "lowest") {
+            const live = list.filter(e => !e.absent)
+            const low = (live.length > 0 ? live : list).reduce((a, b) => b.pct < a.pct ? b : a)
+            return [low]
         }
         return list
     }

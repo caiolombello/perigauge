@@ -12,10 +12,11 @@
 Battery levels of your wireless mouse, keyboard and earbuds in the Linux
 panel, with low-battery notifications. One Rust binary, local only, no Solaar.
 
-**0.1.0-alpha.1.** Verified on hardware: Keychron M6 through
-the Ultra-Link 8K receiver (KDE Plasma 6.6, Ubuntu 26.04). Logitech HID++ and
-Galaxy Buds are implemented and fixture-tested; hardware validation is
-pending. See [compatibility](docs/COMPATIBILITY.md).
+**0.1.0-alpha.2.** Verified on hardware: Keychron M6 through
+the Ultra-Link 8K receiver and Galaxy Buds3 Pro over Bluetooth (left, right
+and case), on KDE Plasma 6.6 / Ubuntu 26.04. Logitech HID++ is implemented
+and fixture-tested; hardware validation is pending.
+See [compatibility](docs/COMPATIBILITY.md).
 
 | Device | Link | How |
 |---|---|---|
@@ -30,7 +31,7 @@ Linux x86_64 with systemd and D-Bus; KDE Plasma 6 for the widget. From the
 [release](https://github.com/caiolombello/perigauge/releases):
 
 ```sh
-v=0.1.0-alpha.1
+v=0.1.0-alpha.2
 curl -LO https://github.com/caiolombello/perigauge/releases/download/v$v/perigauge-$v-x86_64-linux.tar.gz
 curl -LO https://github.com/caiolombello/perigauge/releases/download/v$v/SHA256SUMS
 sha256sum -c SHA256SUMS
@@ -57,6 +58,12 @@ sudo udevadm control --reload && sudo udevadm trigger --subsystem-match=hidraw
 Remove with `./uninstall.sh` (`--purge` also deletes settings and state).
 
 ## Use
+
+The Plasma widget shows a battery meter for every device on the desktop and
+panel. Earbuds have separate left, right and case meters. Choose circular
+gauges or bars in the widget menu or settings, or use the switch beside
+Refresh in the popup. Each widget saves its own style; the panel and its
+popup share the same choice.
 
 ```sh
 perigauge status            # table
