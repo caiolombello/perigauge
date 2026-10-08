@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+"""Read supported wireless peripheral batteries and emit a JSON object.
+
+This helper is stdlib-only. It uses local HID access for Keychron and the
+locally installed Solaar CLI for Logitech; it never makes network requests.
+"""
+import fcntl
+import json
+import os
+import re
+import select
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+CACHE = Path.home() / ".cache" / "perif-battery" / "last.json"
+M6_DESCRIPTOR_PREFIX = bytes([0x06, 0xC1, 0xFF])
+REPORT_OUT, REPORT_IN_STATUS, REPORT_IN_BIG, STATUS_CMD = 0xB3, 0xB6, 0xB4, 0x05
+MXKEYS_TTL = 60
+_BATTERY_PERCENT_RE = re.compile(r"Battery:\s*(\d+)%,?\s*(?:BatteryStatus\.(\w+))?", re.IGNORECASE)
+_BATTERY_TEXT_RE = re.compile(r"Battery:\s*(?:BatteryLevel\.)?([a-z_-]+),?\s*(?:BatteryStatus\.(\w+))?", re.IGNORECASE)
+_DEVICE_HEADER_RE = re.compile(r"^\s*(?:Device:\s*)?\d+\s*:", re.IGNORECASE)
+
+
+def find_m6_hidraw():
+    """Return the Keychron vendor hidraw node, if its receiver is present."""
+    base = Path("/sys/class/hidraw")
+    if not base.exists():
+        return None
+    for entry in sorted(base.iterdir(), key=lambda item: item.name):
+        uevent = entry / "device" / "uevent"
+        descriptor = entry / "device" / "report_descriptor"
+        try:
+            if ("Keychron Ultra-Link 8K" in uevent.read_text()
+                    and descriptor.read_bytes().startswith(M6_DESCRIPTOR_PREFIX)):
+                return "/dev/" + entry.name
+        except OSError:
+            continue
+    return None
+
+
+def _set_nonblock(fd):
+    fcntl.fcntl(fd, fcntl.F_SETFL, fcntl.fcntl(fd, fcntl.F_GETFL) | os.O_NONBLOCK)
+
+
+def _drain(fd):
+    try:
+        while True:
+            os.read(fd, 1024)
+    except (BlockingIOError, OSError):
+        pass
+
+
+def _query_m6_once(fd, timeout=0.4):
+    _drain(fd)
+    try:
+        os.write(fd, bytes([REPORT_OUT, STATUS_CMD]) + b"\x00" * 62)
+    except OSError:
+        return None
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        ready, _, _ = select.select([fd], [], [], 0.04)
+        if not ready:
+            continue
+        try:
+            data = os.read(fd, 256)
+        except (BlockingIOError, OSError):
+            continue
+        if not data:
+            continue
+        report_id, payload = data[0], data[1:]
+        if (report_id in (REPORT_IN_STATUS, REPORT_IN_BIG)
+                and len(payload) >= 20 and payload[0] == STATUS_CMD):
+            return payload[:20]
+    return None
+
+
+def read_m6():
+    now = time.time()
+    device = find_m6_hidraw()
+    if not device:
+        return {"level": None, "connected": False, "stale": False, "error": "no-dongle", "ts": now}
+    try:
+        fd = os.open(device, os.O_RDWR)
+    except OSError as exc:
+        error = "permission-denied" if exc.errno in (1, 13) else f"open:{exc.errno}"
+        return {"level": None, "connected": True, "stale": False, "error": error, "ts": now}
+    _set_nonblock(fd)
+    try:
+        payload = None
+        for _ in range(3):
+            payload = _query_m6_once(fd, 0.45)
+            if payload is not None:
+                break
+    finally:
+        os.close(fd)
+    if payload is None:
+        return {"level": None, "connected": True, "stale": True, "error": "asleep", "ts": now}
+    level = payload[19]
+    return {"level": level if 0 <= level <= 100 else None, "connected": True, "stale": False, "ts": now}
+
+
+def _mxkeys_block(output):
+    """Return only the `solaar show` section for MX Keys, if present.
+
+    `solaar show` emits multiple devices. Searching its complete output can
+    accidentally report the battery of a mouse or receiver that appears first.
+    Device entries begin with a numbered header, so retain the MX Keys entry up
+    to the next one. This is deliberately tolerant of Solaar's indentation.
+    """
+    lines = output.splitlines()
+    start = next((index for index, line in enumerate(lines)
+                  if _DEVICE_HEADER_RE.match(line) and "mx keys" in line.lower()), None)
+    if start is None:
+        return None
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        if _DEVICE_HEADER_RE.match(lines[index]):
+            end = index
+            break
+    return "\n".join(lines[start:end])
+
+
+def _parse_mxkeys_battery(block):
+    """Parse a percentage, or preserve a textual/approximate level safely."""
+    percent = _BATTERY_PERCENT_RE.search(block)
+    if percent:
+        return int(percent.group(1)), percent.group(2).lower() if percent.group(2) else None, None
+    textual = _BATTERY_TEXT_RE.search(block)
+    if textual:
+        # Solaar may expose a qualitative level. Do not invent a percentage:
+        # retain it for the UI as an explicitly approximate textual reading.
+        return None, textual.group(2).lower() if textual.group(2) else None, textual.group(1).replace("_", " ").lower()
+    return None, None, None
+
+
+def read_mxkeys():
+    now = time.time()
+    try:
+        process = subprocess.run(["solaar", "show"], capture_output=True, text=True, timeout=20, check=False)
+    except subprocess.TimeoutExpired:
+        return {"level": None, "connected": False, "charging": None, "status": None, "error": "solaar-timeout", "ts": now}
+    except FileNotFoundError:
+        return {"level": None, "connected": False, "charging": None, "status": None, "error": "solaar-not-found", "ts": now}
+    block = _mxkeys_block(process.stdout)
+    if block is None:
+        return {"level": None, "connected": False, "charging": None, "status": None, "error": "mxkeys-not-found", "ts": now}
+    level, status, level_text = _parse_mxkeys_battery(block)
+    if level is None and level_text is None:
+        error = f"solaar-exit:{process.returncode}" if process.returncode else "battery-unavailable"
+        return {"level": None, "connected": True, "charging": None, "status": None, "error": error, "ts": now}
+    return {"level": level, "level_text": level_text, "connected": True,
+            "charging": status in ("charging", "full", "recharging"), "status": status, "ts": now}
+
+
+def _load_cache():
+    try:
+        return json.loads(CACHE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_cache(data):
+    try:
+        CACHE.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+        os.chmod(CACHE.parent, 0o700)
+        fd, temporary = tempfile.mkstemp(prefix=".last-", dir=CACHE.parent)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as output:
+                json.dump(data, output, separators=(",", ":"))
+            os.chmod(temporary, 0o600)
+            os.replace(temporary, CACHE)
+        finally:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+    except OSError:
+        pass
+
+
+def collect(fresh_mxkeys=True):
+    cache, now = _load_cache(), time.time()
+    m6, previous_m6 = read_m6(), cache.get("m6", {})
+    if m6.get("level") is None and m6.get("connected") and previous_m6.get("level") is not None:
+        m6 = {"level": previous_m6["level"], "connected": True, "stale": True,
+              "ts": previous_m6.get("ts", now), "last_read": previous_m6.get("ts", now),
+              "error": m6.get("error")}
+    previous_mx = cache.get("mxkeys")
+    age = now - previous_mx.get("ts", 0) if previous_mx else None
+    fresh = fresh_mxkeys and (age is None or age > MXKEYS_TTL)
+    mxkeys = read_mxkeys() if fresh else dict(previous_mx or {})
+    if not fresh:
+        mxkeys["connected"] = mxkeys.get("connected", mxkeys.get("level") is not None)
+        mxkeys["stale"] = not mxkeys.get("ts") or now - mxkeys["ts"] > MXKEYS_TTL
+    result = {"m6": m6, "mxkeys": mxkeys, "now": now}
+    _save_cache(result)
+    return result
+
+
+def main():
+    print(json.dumps(collect(fresh_mxkeys="--mx-only" not in sys.argv), separators=(",", ":")))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:  # A panel plugin must not crash for unavailable hardware.
+        print(json.dumps({"error": str(exc)}, separators=(",", ":")))
