@@ -1,0 +1,16 @@
+PeriGauge
+Copyright (c) 2026 Caio Barbieri. MIT License (see LICENSE).
+
+Protocol references (no code copied):
+- Logitech HID++ 2.0 message layout and battery features were cross-checked
+  against the behavior of Solaar (https://github.com/pwr-Solaar/Solaar, GPL-2.0).
+- Samsung Galaxy Buds SPP framing and status fields were cross-checked against
+  the public notes of GalaxyBudsClient
+  (https://github.com/timschneeb/GalaxyBudsClient, GPL-3.0).
+- The Keychron Ultra-Link 8K status report was reverse-engineered locally.
+
+Logitech, Logi Bolt, Unifying, Keychron, Samsung and Galaxy Buds are trademarks
+of their respective owners. PeriGauge is not affiliated with them.
+
+Rust dependencies and their licenses are listed in Cargo.lock; run
+`cargo tree` to inspect them.

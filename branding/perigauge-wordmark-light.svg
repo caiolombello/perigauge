@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" width="420" height="96" role="img" aria-labelledby="t">
+  <title id="t">PeriGauge</title>
+  <g transform="translate(0 0) scale(.75)" fill="none">
+    <path d="M32 88A40 40 0 0 1 88 32" stroke="#3D4FD1" stroke-width="10" stroke-linecap="round" transform="translate(0 0)"/>
+    <path d="M88 32A40 40 0 0 1 96 88" stroke="#3D4FD1" stroke-width="10" stroke-linecap="round" opacity=".4"/>
+    <rect x="52" y="46" width="24" height="38" rx="12" fill="#151A33"/>
+    <rect x="61.5" y="54" width="5" height="12" rx="2.5" fill="#FFFFFF"/>
+  </g>
+  <text x="104" y="64" font-family="system-ui,-apple-system,'Segoe UI','DejaVu Sans',sans-serif" font-size="52" font-weight="700" letter-spacing="-1" fill="#151A33">Peri<tspan fill="#3D4FD1">Gauge</tspan></text>
+</svg>

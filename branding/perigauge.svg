@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-labelledby="t">
+  <title id="t">PeriGauge</title>
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="#151A33"/>
+  <path d="M88 32A40 40 0 0 1 96 88" fill="none" stroke="#4B5490" stroke-width="10" stroke-linecap="round"/>
+  <path d="M32 88A40 40 0 0 1 88 32" fill="none" stroke="#A9B4FF" stroke-width="10" stroke-linecap="round"/>
+  <rect x="52" y="46" width="24" height="38" rx="12" fill="#F2F4FF"/>
+  <rect x="61.5" y="54" width="5" height="12" rx="2.5" fill="#151A33"/>
+</svg>

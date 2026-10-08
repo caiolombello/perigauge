@@ -1,0 +1,15 @@
+/* PeriGauge design tokens — fonte: tokens.json. Fontes do sistema, sem requisições externas. */
+:root {
+  color-scheme: light dark;
+  --pg-paper: #F6F7FC; --pg-surface: #FFFFFF; --pg-surface-2: #EEF0FA; --pg-line: #C9CDE6;
+  --pg-text: #151A33; --pg-muted: #4A5273; --pg-accent: #3D4FD1; --pg-accent-soft: #E4E7FF;
+  --pg-ok: #0B6B3A; --pg-warn: #8A5300; --pg-critical: #B3261E; --pg-charging: #0B6B8F;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pg-paper: #0E1124; --pg-surface: #161A33; --pg-surface-2: #1D2243; --pg-line: #363D6B;
+    --pg-text: #F2F4FF; --pg-muted: #B4BAD9; --pg-accent: #A9B4FF; --pg-accent-soft: #232A5C;
+    --pg-ok: #5FD38D; --pg-warn: #FFC15C; --pg-critical: #FF8A80; --pg-charging: #6CCBF0;
+  }
+}
+/* Estados: sempre usar forma + texto junto da cor (ver tokens.json "states"). */

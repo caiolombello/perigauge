@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-labelledby="t d">
+  <title id="t">PeriGauge — bateria dos periféricos no Linux</title>
+  <desc id="d">Cartão social conceitual: marca PeriGauge, versão pré-alpha e ilustração conceitual de popup com valores fictícios.</desc>
+  <rect width="1200" height="630" fill="#0E1124"/>
+  <g transform="translate(46 40) scale(1.7)" fill="none">
+    <path d="M32 88A40 40 0 0 1 88 32" stroke="#A9B4FF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M88 32A40 40 0 0 1 96 88" stroke="#4B5490" stroke-width="10" stroke-linecap="round"/>
+    <rect x="52" y="46" width="24" height="38" rx="12" fill="#F2F4FF"/>
+    <rect x="61.5" y="54" width="5" height="12" rx="2.5" fill="#0E1124"/>
+  </g>
+  <g font-family="system-ui,-apple-system,'Segoe UI','DejaVu Sans',sans-serif" fill="#F2F4FF">
+    <text x="80" y="350" font-size="96" font-weight="700" letter-spacing="-2">Peri<tspan fill="#A9B4FF">Gauge</tspan></text>
+    <text x="84" y="410" font-size="30" fill="#B4BAD9">Battery of your peripherals on Linux</text>
+    <text x="84" y="452" font-size="30" fill="#B4BAD9">Bateria dos periféricos no Linux</text>
+    <text x="84" y="540" font-size="26" fill="#FFC15C">▲ Pré-alpha / Pre-alpha 0.1.0-alpha.1</text>
+    <g transform="translate(700 110)">
+      <rect width="420" height="410" rx="24" fill="#161A33" stroke="#363D6B" stroke-width="2"/>
+      <text x="28" y="50" font-size="24" fill="#B4BAD9">Conceito / Concept</text>
+      <text x="28" y="80" font-size="18" fill="#8E95BD">valores fictícios / fictional values</text>
+      <g font-size="28">
+        <text x="28" y="146">Mouse</text><text x="392" y="146" text-anchor="end" fill="#5FD38D">● 82% Bom</text>
+        <rect x="28" y="162" width="364" height="12" rx="6" fill="#363D6B"/><rect x="28" y="162" width="298" height="12" rx="6" fill="#5FD38D"/>
+        <text x="28" y="240">Teclado</text><text x="392" y="240" text-anchor="end" fill="#FFC15C">▲ 18% Baixa</text>
+        <rect x="28" y="256" width="364" height="12" rx="6" fill="#363D6B"/><rect x="28" y="256" width="66" height="12" rx="6" fill="#FFC15C"/>
+        <text x="28" y="334">Fones</text><text x="392" y="334" text-anchor="end" fill="#6CCBF0">⚡ 45% Carregando</text>
+        <rect x="28" y="350" width="364" height="12" rx="6" fill="#363D6B"/><rect x="28" y="350" width="164" height="12" rx="6" fill="#6CCBF0"/>
+      </g>
+    </g>
+  </g>
+</svg>
