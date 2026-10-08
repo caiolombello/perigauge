@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <style type="text/css" id="current-color-scheme">.ColorScheme-Text{color:#232629}</style>
+  <g class="ColorScheme-Text" fill="currentColor" stroke="currentColor">
+    <path d="M28 11A13 13 0 0 1 21 28" fill="none" stroke-width="3" opacity=".35"/>
+    <path d="M11 28A13 13 0 1 1 28 11" fill="none" stroke-width="3"/>
+    <path fill-rule="evenodd" stroke="none" d="M12 13a4 4 0 0 1 8 0v5a4 4 0 0 1-8 0zM15 12h2v4h-2z"/>
+  </g>
+</svg>

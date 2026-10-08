@@ -1,0 +1,17 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Id": "io.github.caiolombello.perigauge",
+    "Name": "PeriGauge",
+    "Description": "Battery levels of wireless peripherals (mice, keyboards, earbuds)",
+    "Icon": "perigauge",
+    "Version": "0.1.0-alpha.1",
+    "License": "MIT",
+    "Authors": [{"Name": "Caio Barbieri"}],
+    "Category": "System Information",
+    "EnabledByDefault": false
+  },
+  "X-Plasma-API": "declarativeappletscript",
+  "X-Plasma-API-Minimum-Version": "6.0",
+  "X-Plasma-MainScript": "ui/main.qml"
+}
