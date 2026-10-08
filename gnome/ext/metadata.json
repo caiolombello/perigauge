@@ -1,8 +1,0 @@
-{
-  "uuid": "perif-battery@opsteam",
-  "name": "Peripherals Battery (MX Keys + Keychron M6)",
-  "description": "Unified battery indicator for a Logitech MX Keys (via Solaar) and a Keychron M6 mouse, with adaptive panel density and disconnected-device filtering.",
-  "shell-version": ["48", "49", "50"],
-  "version": 2,
-  "url": "https://opsteam"
-}
