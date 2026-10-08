@@ -151,6 +151,25 @@ PlasmoidItem {
         return parts.join(", ")
     }
 
+    function componentA11y(dev, component) {
+        const inf = info(dev)
+        const pct = isNum(component.percent) ? Math.round(component.percent) : null
+        const parts = [dev.name, componentLabel(component.id),
+            pct === null ? i18n("level unknown") : i18n("%1 percent", pct)]
+        if (pct !== null) parts.push(severityText(severityOf(pct, null)))
+        if (dev.present === false) {
+            parts.push(i18n("out of range"), i18n("last seen %1", relativeTime(dev.updated_at, now)))
+        } else if (inf.stale) {
+            parts.push(i18n("last known reading"))
+        } else if (component.charging === "charging") {
+            parts.push(i18n("charging"))
+        } else if (component.charging === "full") {
+            parts.push(i18n("Fully charged"))
+        }
+        if (inf.error !== "") parts.push(inf.error)
+        return parts.join(", ")
+    }
+
     function severityText(sev) {
         switch (sev) {
         case "critical": return i18n("Critical")
@@ -221,7 +240,7 @@ PlasmoidItem {
                         : inf.stale ? i18n("Last reading")
                         : charging ? i18n("Charging")
                         : pct === null ? (part ? severityText("unknown") : inf.stateText) : "",
-                    description: a11y(dev) + (part ? ", " + label + " " + (pct === null ? i18n("level unknown") : i18n("%1 percent", pct)) : "")
+                    description: part ? componentA11y(dev, part) : a11y(dev)
                 })
             }
         }
@@ -241,8 +260,10 @@ PlasmoidItem {
         if (mode === "icon") {
             const rank = { critical: 3, warn: 2, ok: 1, unknown: 0 }
             const worst = list.reduce((a, b) => rank[b.severity] > rank[a.severity] ? b : a)
-            return [{ icon: "", text: "", severity: worst.severity, charging: list.some(e => e.charging),
-                      stale: list.every(e => e.stale), pct: 101, name: "PeriGauge" }]
+            return [{ icon: "", text: "", severity: worst.severity,
+                      charging: list.some(e => e.charging && !e.stale && !e.absent),
+                      stale: list.every(e => e.stale), pct: 101, name: "PeriGauge",
+                      description: "PeriGauge, " + worst.description }]
         }
         if (mode === "lowest") {
             const live = list.filter(e => !e.absent)

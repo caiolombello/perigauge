@@ -82,6 +82,7 @@ Item {
     }
 
     BatteryBar {
+        objectName: "visualBar"
         visible: ring.barStyle
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
@@ -91,6 +92,7 @@ Item {
         value: ring.hasValue ? ring.value : 0
         barColor: ring.accent
         accessibleName: ring.accessibleName
+        Accessible.ignored: true
     }
 
     Kirigami.Icon {
@@ -108,6 +110,15 @@ Item {
         visible: ring.charging && !ring.stale && !ring.absent
         size: Math.max(9, Math.round(ring.diameter * 0.23))
         color: ring.accent
+    }
+    Kirigami.Icon {
+        objectName: "severityBadge"
+        anchors.right: parent.right
+        anchors.top: parent.top
+        visible: !ring.hasValue && (ring.severity === "warn" || ring.severity === "critical")
+        width: Math.min(18, Math.max(10, Math.round(ring.diameter * 0.5)))
+        height: width
+        source: ring.severity === "critical" ? "data-error" : "data-warning"
     }
     Kirigami.Icon {
         anchors.right: parent.right
