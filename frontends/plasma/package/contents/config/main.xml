@@ -20,7 +20,7 @@
     </entry>
     <entry name="showOutOfRange" type="Bool">
       <label>Show devices that are out of range</label>
-      <default>true</default>
+      <default>false</default>
     </entry>
     <entry name="desktopLayout" type="String">
       <label>Desktop widget layout: auto, gauge, list or grid</label>
