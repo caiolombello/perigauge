@@ -12,16 +12,17 @@
 Battery levels of your wireless mouse, keyboard and earbuds in the Linux
 panel, with low-battery notifications. One Rust binary, local only, no Solaar.
 
-**0.1.0-alpha.2.** Verified on hardware: Keychron M6 through
-the Ultra-Link 8K receiver and Galaxy Buds3 Pro over Bluetooth (left, right
-and case), on KDE Plasma 6.6 / Ubuntu 26.04. Logitech HID++ is implemented
-and fixture-tested; hardware validation is pending.
+**0.1.0-alpha.3.** Battery readings verified on hardware: Keychron M6 through
+the Ultra-Link 8K receiver, MX Keys over Bluetooth and Galaxy Buds3 Pro over
+Bluetooth (left, right and case), on KDE Plasma 6.6 / Ubuntu 26.04.
+Logitech receiver connections and MX Master 3S still await hardware validation.
 See [compatibility](docs/COMPATIBILITY.md).
 
 | Device | Link | How |
 |---|---|---|
 | Keychron M6 | Ultra-Link 8K | vendor HID report |
-| Logitech MX Keys, MX Master 3S | Logi Bolt, Unifying, Bluetooth | HID++ 2.0 (0x1004/0x1000/0x1001) |
+| Logitech MX Keys | Bluetooth (verified), Unifying (hardware pending) | HID++ 2.0 (0x1004/0x1000/0x1001) |
+| Logitech MX Master 3S | Logi Bolt, Bluetooth (hardware pending) | HID++ 2.0 (0x1004/0x1000/0x1001) |
 | Samsung Galaxy Buds3 Pro | Bluetooth | Samsung SPP status: left, right, case |
 | Anything UPower already knows | kernel `power_supply`, BLE Battery, HFP | UPower |
 
@@ -31,7 +32,7 @@ Linux x86_64 with systemd and D-Bus; KDE Plasma 6 for the widget. From the
 [release](https://github.com/caiolombello/perigauge/releases):
 
 ```sh
-v=0.1.0-alpha.2
+v=0.1.0-alpha.3
 curl -LO https://github.com/caiolombello/perigauge/releases/download/v$v/perigauge-$v-x86_64-linux.tar.gz
 curl -LO https://github.com/caiolombello/perigauge/releases/download/v$v/SHA256SUMS
 sha256sum -c SHA256SUMS
@@ -64,6 +65,12 @@ panel. Earbuds have separate left, right and case meters. Choose circular
 gauges or bars in the widget menu or settings, or use the switch beside
 Refresh in the popup. Each widget saves its own style; the panel and its
 popup share the same choice.
+
+Disconnected devices are hidden by default in the panel, popup and desktop
+card. Their last reading is kept for reconnection; enable **Show devices that
+are out of range** in the widget settings to display it. Upgrades preserve
+saved preferences: if an earlier installation still shows disconnected
+devices, uncheck that option.
 
 ```sh
 perigauge status            # table

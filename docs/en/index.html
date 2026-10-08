@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PeriGauge — peripheral battery on your Linux desktop</title>
-<meta name="description" content="Battery monitor for Bluetooth mice, keyboards and headphones on the Linux desktop. Rust core, fully local, no network, no telemetry. Pre-alpha 0.1.0-alpha.2.">
+<meta name="description" content="Battery monitor for Bluetooth mice, keyboards and headphones on the Linux desktop. Rust core, fully local, no network, no telemetry. Pre-alpha 0.1.0-alpha.3.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F6F7FC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1124" media="(prefers-color-scheme: dark)">
@@ -16,12 +16,12 @@
 <meta property="og:site_name" content="PeriGauge">
 <meta property="og:locale" content="en_US">
 <meta property="og:title" content="PeriGauge — peripheral battery on your Linux desktop">
-<meta property="og:description" content="Battery monitor for Bluetooth mice, keyboards and headphones on the Linux desktop. Rust core, fully local, no network, no telemetry. Pre-alpha 0.1.0-alpha.2.">
+<meta property="og:description" content="Battery monitor for Bluetooth mice, keyboards and headphones on the Linux desktop. Rust core, fully local, no network, no telemetry. Pre-alpha 0.1.0-alpha.3.">
 <meta property="og:image" content="https://caiolombello.github.io/perigauge/assets/perigauge-social-card.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="PeriGauge: peripheral battery on Linux. Pre-alpha 0.1.0-alpha.2.">
+<meta property="og:image:alt" content="PeriGauge: peripheral battery on Linux. Pre-alpha 0.1.0-alpha.3.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="stylesheet" href="../style.css">
@@ -40,7 +40,7 @@
  <symbol id="i-gen" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.1"/></symbol>
 </svg>
 
-<p class="prerelease"><span class="wrap" style="display:block"><strong>Pre-alpha 0.1.0-alpha.2.</strong> Battery readings verified on hardware with Keychron M6 and Galaxy Buds3 Pro; Logitech still awaits hardware validation.</span></p>
+<p class="prerelease"><span class="wrap" style="display:block"><strong>Pre-alpha 0.1.0-alpha.3.</strong> Battery readings verified on hardware with Keychron M6, MX Keys over Bluetooth and Galaxy Buds3 Pro; Logitech receivers and MX Master 3S still await hardware validation.</span></p>
 
 <header class="site-header">
  <div class="wrap header-inner">
@@ -62,7 +62,7 @@
   <div>
    <span class="badge">Pre-alpha · Linux · KDE Plasma 6 first</span>
    <h1>Your mouse, keyboard and headphone battery, right in your panel.</h1>
-   <p class="lead">PeriGauge shows a meter for each device in the panel, on the desktop and in a popup, and warns you before they run out. Choose circular gauges or bars, including left bud, right bud and case. A single Rust binary, fully local: no Solaar, no network, no telemetry.</p>
+   <p class="lead">PeriGauge shows a meter for each device in the panel, on the desktop and in a popup, and warns you before they run out. Choose circular gauges or bars, including left bud, right bud and case. Disconnected devices are hidden by default. A single Rust binary, fully local: no Solaar, no network, no telemetry.</p>
    <div class="actions">
     <a class="btn" href="#instalar">See install (pre-alpha)</a>
     <a class="btn btn-ghost" href="#dispositivos">Supported devices</a>
@@ -96,7 +96,9 @@
    <thead><tr><th scope="col">Device</th><th scope="col">Connection</th><th scope="col">Backend</th><th scope="col">Evidence</th><th scope="col">Notes</th></tr></thead>
    <tbody>
     <tr><th scope="row">Keychron M6</th><td>Keychron Ultra-Link 8K receiver</td><td>Vendor HID protocol</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verified on hardware</span></td><td>Read from a real M6 through the Ultra-Link 8K receiver.</td></tr>
-    <tr><th scope="row">Logitech MX Keys · MX Master 3S</th><td>Bolt receiver or Bluetooth</td><td>Direct HID++ 2.0 (no Solaar)</td><td><span class="state s-warn"><svg class="" aria-hidden="true" focusable="false"><use href="#i-dev"/></svg>In development</span></td><td>Fixture-based tests; hardware pending.</td></tr>
+    <tr><th scope="row">Logitech MX Keys</th><td>Bluetooth</td><td>Direct HID++ 2.0 (no Solaar)</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verified on hardware</span></td><td>Battery reading verified over Bluetooth with direct HID++, no Solaar. Charging cycles and notifications on this keyboard are not yet verified.</td></tr>
+    <tr><th scope="row">Logitech MX Keys</th><td>Unifying receiver</td><td>Direct HID++ 2.0 (no Solaar)</td><td><span class="state s-warn"><svg class="" aria-hidden="true" focusable="false"><use href="#i-dev"/></svg>In development</span></td><td>Fixture-based tests; hardware pending.</td></tr>
+    <tr><th scope="row">Logitech MX Master 3S</th><td>Bolt receiver or Bluetooth</td><td>Direct HID++ 2.0 (no Solaar)</td><td><span class="state s-warn"><svg class="" aria-hidden="true" focusable="false"><use href="#i-dev"/></svg>In development</span></td><td>Fixture-based tests; hardware pending.</td></tr>
     <tr><th scope="row">Samsung Galaxy Buds3 Pro</th><td>Bluetooth</td><td>Samsung SPP protocol</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verified on hardware</span></td><td>Battery readings and updates verified over Bluetooth on a real device: left bud, right bud and case, when reported by the device.</td></tr>
     <tr><th scope="row">Any device UPower/BlueZ already reports</th><td>Bluetooth / USB</td><td>UPower and BlueZ (kernel power_supply, BLE Battery Service, HFP)</td><td><span class="state s-stale"><svg class="" aria-hidden="true" focusable="false"><use href="#i-gen"/></svg>Generic / expected</span></td><td>Depends on what the device reports; not a per-model guarantee.</td></tr>
    </tbody>
@@ -145,11 +147,11 @@
   <h2>Install (pre-alpha)</h2>
   <p class="lead">Binary for Linux x86_64 with glibc 2.39 or newer, tested on Ubuntu 26.04 with KDE Plasma 6. Check the checksum and dry-run before installing; everything goes to your user, no sudo. To build from source, see the README.</p>
   <div class="code"><pre id="cmds"><code># download the release and check the checksum
-curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.2/perigauge-0.1.0-alpha.2-x86_64-linux.tar.gz
-curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.2/SHA256SUMS
+curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.3/perigauge-0.1.0-alpha.3-x86_64-linux.tar.gz
+curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.3/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar xf perigauge-0.1.0-alpha.2-x86_64-linux.tar.gz
-cd perigauge-0.1.0-alpha.2
+tar xf perigauge-0.1.0-alpha.3-x86_64-linux.tar.gz
+cd perigauge-0.1.0-alpha.3
 # dry-run; then install with the notification service
 ./install.sh --dry-run
 ./install.sh --enable-service</code></pre></div>
@@ -166,7 +168,7 @@ cd perigauge-0.1.0-alpha.2
   <p class="eyebrow">Roadmap</p>
   <h2>What comes next</h2>
   <ul class="grid">
-   <li class="card"><h3>0.1.0-alpha.2</h3><p>Per-device meters and switching between gauges and bars. Published October 2026.</p></li>
+   <li class="card"><h3>0.1.0-alpha.3</h3><p>Disconnected devices hidden by default and MX Keys battery reading verified over Bluetooth. Published October 2026.</p></li>
    <li class="card"><h3>KDE Plasma 6 plasmoid</h3><p>Always-visible batteries in the panel and on the desktop; popup follows the panel style.</p></li>
    <li class="card"><h3>GNOME Shell extension</h3><p>Planned for after the plasmoid.</p></li>
    <li class="card"><h3>More devices</h3><p>More peripherals as hardware is available to verify. Each with its own evidence level.</p></li>

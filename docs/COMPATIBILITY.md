@@ -1,7 +1,7 @@
 # Compatibilidade do PeriGauge / Compatibility
 
-> **Pré-alpha 0.1.0-alpha.2.** Esta matriz descreve o estado do desenvolvimento, não uma promessa de suporte.
-> *Pre-alpha 0.1.0-alpha.2. This matrix describes development status, not a support promise.*
+> **Pré-alpha 0.1.0-alpha.3.** Esta matriz descreve o estado do desenvolvimento, não uma promessa de suporte.
+> *Pre-alpha 0.1.0-alpha.3. This matrix describes development status, not a support promise.*
 
 ## Níveis de evidência / Evidence levels
 
@@ -16,8 +16,8 @@
 | Dispositivo (*Device*) | Conexão (*Connection*) | Backend | Dados lidos (*Data read*) | Evidência (*Evidence*) | Observações (*Notes*) |
 |---|---|---|---|---|---|
 | Keychron M6 | Receptor Keychron Ultra-Link 8K | Protocolo HID de fornecedor | Nível de bateria | **Verificado em hardware** | — |
-| Logitech MX Keys | Receptor Bolt | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
-| Logitech MX Keys | Bluetooth | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
+| Logitech MX Keys | Receptor Unifying | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
+| Logitech MX Keys | Bluetooth | HID++ 2.0 direto (sem Solaar) | Nível de bateria | **Verificado em hardware** | Leitura real de 100% pelo backend `hidpp`, consistente com BlueZ; verificado no KDE Plasma 6.6 / Ubuntu 26.04 em 08/10/2026. Ciclos de carga e notificações ainda não foram verificados nesse teclado. |
 | Logitech MX Master 3S | Receptor Bolt | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
 | Logitech MX Master 3S | Bluetooth | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
 | Samsung Galaxy Buds3 Pro | Bluetooth | Protocolo SPP da Samsung | Bateria do fone esquerdo, do direito e do estojo, quando informado | **Verificado em hardware** | Leituras e atualizações reais via backend `galaxy-buds`; verificado no KDE Plasma 6.6 / Ubuntu 26.04 em 08/10/2026. |

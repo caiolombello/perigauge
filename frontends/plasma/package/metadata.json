@@ -5,7 +5,7 @@
     "Name": "PeriGauge",
     "Description": "Battery levels of wireless peripherals (mice, keyboards, earbuds)",
     "Icon": "perigauge",
-    "Version": "0.1.0-alpha.2",
+    "Version": "0.1.0-alpha.3",
     "License": "MIT",
     "Authors": [{"Name": "Caio Barbieri"}],
     "Category": "System Information",

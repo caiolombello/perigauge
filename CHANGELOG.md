@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.0-alpha.3 — 2026-10-08
+
+- Hide disconnected devices by default in the panel, popup and desktop card.
+  Last readings remain available for reconnection and through the optional
+  **Show devices that are out of range** setting.
+- Upgrades preserve saved widget preferences. If an earlier installation
+  still shows disconnected devices, uncheck that option in its settings.
+- MX Keys battery reading verified on hardware over Bluetooth with the
+  direct HID++ backend, without Solaar. Logitech receiver connections and
+  MX Master 3S still await hardware validation.
+
 ## 0.1.0-alpha.2 — 2026-10-08
 
 - Always-visible battery meters for each device on the desktop and panel,

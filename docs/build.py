@@ -151,11 +151,11 @@ TPL = r'''<!doctype html>
   <h2>@@h_inst@@</h2>
   <p class="lead">@@inst_lead@@</p>
   <div class="code"><pre id="cmds"><code># @@inst_c1@@
-curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.2/perigauge-0.1.0-alpha.2-x86_64-linux.tar.gz
-curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.2/SHA256SUMS
+curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.3/perigauge-0.1.0-alpha.3-x86_64-linux.tar.gz
+curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.3/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar xf perigauge-0.1.0-alpha.2-x86_64-linux.tar.gz
-cd perigauge-0.1.0-alpha.2
+tar xf perigauge-0.1.0-alpha.3-x86_64-linux.tar.gz
+cd perigauge-0.1.0-alpha.3
 # @@inst_c2@@
 ./install.sh --dry-run
 ./install.sh --enable-service</code></pre></div>
@@ -198,7 +198,9 @@ def rows(L):
         return f'<span class="state {col}">{ic(icon)}{text}</span>'
     R = [
      ("Keychron M6", L["c_ult"], L["c_ult2"], "v", L["ev_v"], L["n_m6"]),
-     ("Logitech MX Keys · MX Master 3S", L["c_lg"], L["c_lg2"], "d", L["ev_d"], L["n_lg"]),
+     ("Logitech MX Keys", "Bluetooth", L["c_lg2"], "v", L["ev_v"], L["n_keys"]),
+     ("Logitech MX Keys", L["c_receiver"], L["c_lg2"], "d", L["ev_d"], L["n_lg"]),
+     ("Logitech MX Master 3S", L["c_lg"], L["c_lg2"], "d", L["ev_d"], L["n_lg"]),
      ("Samsung Galaxy Buds3 Pro", "Bluetooth", L["c_bud"], "v", L["ev_v"], L["n_bud"]),
      (L["gen_dev"], L["gen_conn"], L["gen_back"], "g", L["ev_g"], L["n_gen"]),
     ]
@@ -211,15 +213,15 @@ PT = dict(
  lang="pt-BR", oglocale="pt_BR", root="", home="./", compat="../COMPATIBILITY.md" if False else "COMPATIBILITY.md",
  canon="https://caiolombello.github.io/perigauge/",
  title="PeriGauge — bateria dos seus periféricos no Linux",
- desc="Monitor de bateria de mouses, teclados e fones Bluetooth para o desktop Linux. Núcleo em Rust, local, sem rede e sem telemetria. Pré-alpha 0.1.0-alpha.2.",
- ogalt="PeriGauge: bateria dos periféricos no Linux. Pré-alpha 0.1.0-alpha.2.",
+ desc="Monitor de bateria de mouses, teclados e fones Bluetooth para o desktop Linux. Núcleo em Rust, local, sem rede e sem telemetria. Pré-alpha 0.1.0-alpha.3.",
+ ogalt="PeriGauge: bateria dos periféricos no Linux. Pré-alpha 0.1.0-alpha.3.",
  skip="Ir para o conteúdo",
- prerelease="<strong>Pré-alpha 0.1.0-alpha.2.</strong> Leituras verificadas em hardware com Keychron M6 e Galaxy Buds3 Pro; Logitech ainda depende de validação em hardware.",
+ prerelease="<strong>Pré-alpha 0.1.0-alpha.3.</strong> Leituras verificadas em hardware com Keychron M6, MX Keys via Bluetooth e Galaxy Buds3 Pro; receptores Logitech e MX Master 3S ainda dependem de validação em hardware.",
  navlabel="Seções", langlabel="Idioma",
  n1="Dispositivos", n2="Notificações", n3="Privacidade", n4="Instalação", n5="Roadmap",
  badge="Pré-alpha · Linux · KDE Plasma 6 primeiro",
  h1="A bateria do mouse, do teclado e dos fones, no seu painel.",
- lead="PeriGauge mostra um medidor por dispositivo no painel, na área de trabalho e num popup, e avisa antes de acabar. Escolha gauge circular ou barras, incluindo fone esquerdo, direito e estojo. Um único binário em Rust, tudo local: sem Solaar, sem rede, sem telemetria.",
+ lead="PeriGauge mostra um medidor por dispositivo no painel, na área de trabalho e num popup, e avisa antes de acabar. Escolha gauge circular ou barras, incluindo fone esquerdo, direito e estojo. Dispositivos desconectados ficam ocultos por padrão. Um único binário em Rust, tudo local: sem Solaar, sem rede, sem telemetria.",
  cta1="Ver instalação (pré-alpha)", cta2="Dispositivos suportados", gh="Código no GitHub", releases="Releases",
  shot_styles="Estilo de exibição", shot_rings="Gauge", shot_bars="Barras",
  shot_rings_alt="PeriGauge em gauge: Keychron M6 41%, Galaxy Buds3 Pro esquerdo 83%, direito 80% e estojo 79%.",
@@ -233,10 +235,11 @@ PT = dict(
  tablecap="Compatibilidade por dispositivo e nível de evidência. Pré-alpha.",
  c1="Dispositivo", c2="Conexão", c3="Backend", c4="Evidência", c5="Observações",
  c_ult="Receptor Keychron Ultra-Link 8K", c_ult2="Protocolo HID de fornecedor",
- c_lg="Receptor Bolt ou Bluetooth", c_lg2="HID++ 2.0 direto (sem Solaar)",
+ c_receiver="Receptor Unifying", c_lg="Receptor Bolt ou Bluetooth", c_lg2="HID++ 2.0 direto (sem Solaar)",
  c_bud="Protocolo SPP da Samsung",
  ev_v="Verificado em hardware", ev_d="Em desenvolvimento", ev_g="Genérico / esperado",
  n_m6="Lido de um M6 real pelo receptor Ultra-Link 8K.",
+ n_keys="Leitura de bateria verificada via Bluetooth com HID++ direto, sem Solaar. Ciclos de carga e notificações nesse teclado ainda não verificados.",
  n_lg="Testes com fixtures; hardware pendente.",
  n_bud="Leituras e atualizações de bateria verificadas via Bluetooth em um aparelho real: fone esquerdo, direito e estojo, quando informado pelo dispositivo.",
  gen_dev="Qualquer dispositivo que o UPower/BlueZ já reporte", gen_conn="Bluetooth / USB",
@@ -265,7 +268,7 @@ PT = dict(
  copy="Copiar comandos", copied="Comandos copiados.", failed="Não foi possível copiar.",
  udev="O acesso HID sem root exige uma regra udev. É um passo explícito e separado, com sudo, documentado no repositório; a instalação nunca o executa sozinha.",
  e5="Roadmap", h_road="O que vem a seguir",
- m1h="0.1.0-alpha.2", m1="Medidores por dispositivo e alternância entre gauge e barras. Publicado em outubro de 2026.",
+ m1h="0.1.0-alpha.3", m1="Desconectados ocultos por padrão e leitura do MX Keys via Bluetooth verificada. Publicado em outubro de 2026.",
  m2h="Plasmoid KDE Plasma 6", m2="Baterias sempre à vista no painel e na área de trabalho; popup com o mesmo estilo do painel.",
  m3h="Extensão GNOME Shell", m3="Planejada para depois do plasmoid.",
  m4h="Mais dispositivos", m4="Mais periféricos conforme houver hardware para verificar. Cada um com seu nível de evidência.",
@@ -277,15 +280,15 @@ EN.update(
  lang="en", oglocale="en_US", root="../", home="./", compat="../COMPATIBILITY.md",
  canon="https://caiolombello.github.io/perigauge/en/",
  title="PeriGauge — peripheral battery on your Linux desktop",
- desc="Battery monitor for Bluetooth mice, keyboards and headphones on the Linux desktop. Rust core, fully local, no network, no telemetry. Pre-alpha 0.1.0-alpha.2.",
- ogalt="PeriGauge: peripheral battery on Linux. Pre-alpha 0.1.0-alpha.2.",
+ desc="Battery monitor for Bluetooth mice, keyboards and headphones on the Linux desktop. Rust core, fully local, no network, no telemetry. Pre-alpha 0.1.0-alpha.3.",
+ ogalt="PeriGauge: peripheral battery on Linux. Pre-alpha 0.1.0-alpha.3.",
  skip="Skip to content",
- prerelease="<strong>Pre-alpha 0.1.0-alpha.2.</strong> Battery readings verified on hardware with Keychron M6 and Galaxy Buds3 Pro; Logitech still awaits hardware validation.",
+ prerelease="<strong>Pre-alpha 0.1.0-alpha.3.</strong> Battery readings verified on hardware with Keychron M6, MX Keys over Bluetooth and Galaxy Buds3 Pro; Logitech receivers and MX Master 3S still await hardware validation.",
  navlabel="Sections", langlabel="Language",
  n1="Devices", n2="Notifications", n3="Privacy", n4="Install", n5="Roadmap",
  badge="Pre-alpha · Linux · KDE Plasma 6 first",
  h1="Your mouse, keyboard and headphone battery, right in your panel.",
- lead="PeriGauge shows a meter for each device in the panel, on the desktop and in a popup, and warns you before they run out. Choose circular gauges or bars, including left bud, right bud and case. A single Rust binary, fully local: no Solaar, no network, no telemetry.",
+ lead="PeriGauge shows a meter for each device in the panel, on the desktop and in a popup, and warns you before they run out. Choose circular gauges or bars, including left bud, right bud and case. Disconnected devices are hidden by default. A single Rust binary, fully local: no Solaar, no network, no telemetry.",
  cta1="See install (pre-alpha)", cta2="Supported devices", gh="Source on GitHub", releases="Releases",
  shot_styles="Display style", shot_rings="Gauge", shot_bars="Bars",
  shot_rings_alt="PeriGauge gauges: Keychron M6 41%, Galaxy Buds3 Pro left 83%, right 80% and case 79%.",
@@ -299,10 +302,11 @@ EN.update(
  tablecap="Compatibility by device and evidence level. Pre-alpha.",
  c1="Device", c2="Connection", c3="Backend", c4="Evidence", c5="Notes",
  c_ult="Keychron Ultra-Link 8K receiver", c_ult2="Vendor HID protocol",
- c_lg="Bolt receiver or Bluetooth", c_lg2="Direct HID++ 2.0 (no Solaar)",
+ c_receiver="Unifying receiver", c_lg="Bolt receiver or Bluetooth", c_lg2="Direct HID++ 2.0 (no Solaar)",
  c_bud="Samsung SPP protocol",
  ev_v="Verified on hardware", ev_d="In development", ev_g="Generic / expected",
  n_m6="Read from a real M6 through the Ultra-Link 8K receiver.",
+ n_keys="Battery reading verified over Bluetooth with direct HID++, no Solaar. Charging cycles and notifications on this keyboard are not yet verified.",
  n_lg="Fixture-based tests; hardware pending.",
  n_bud="Battery readings and updates verified over Bluetooth on a real device: left bud, right bud and case, when reported by the device.",
  gen_dev="Any device UPower/BlueZ already reports", gen_conn="Bluetooth / USB",
@@ -331,7 +335,7 @@ EN.update(
  copy="Copy commands", copied="Commands copied.", failed="Could not copy.",
  udev="Root-less HID access needs a udev rule. It is an explicit, separate step that uses sudo, documented in the repository; the installer never runs it on its own.",
  e5="Roadmap", h_road="What comes next",
- m1h="0.1.0-alpha.2", m1="Per-device meters and switching between gauges and bars. Published October 2026.",
+ m1h="0.1.0-alpha.3", m1="Disconnected devices hidden by default and MX Keys battery reading verified over Bluetooth. Published October 2026.",
  m2h="KDE Plasma 6 plasmoid", m2="Always-visible batteries in the panel and on the desktop; popup follows the panel style.",
  m3h="GNOME Shell extension", m3="Planned for after the plasmoid.",
  m4h="More devices", m4="More peripherals as hardware is available to verify. Each with its own evidence level.",
