@@ -55,6 +55,15 @@ PlasmaExtras.Representation {
                 implicitHeight: implicitWidth
             }
             PlasmaComponents3.ToolButton {
+                icon.name: full.host.displayStyle === "bars" ? "office-chart-ring" : "office-chart-bar"
+                text: full.host.displayStyle === "bars" ? i18n("Switch to circles (gauge)") : i18n("Switch to battery bars")
+                display: PlasmaComponents3.AbstractButton.IconOnly
+                onClicked: full.host.setDisplayStyle(full.host.displayStyle === "bars" ? "rings" : "bars")
+                PlasmaComponents3.ToolTip.text: text
+                PlasmaComponents3.ToolTip.visible: hovered
+                Accessible.name: text
+            }
+            PlasmaComponents3.ToolButton {
                 icon.name: "view-refresh"
                 text: i18n("Refresh")
                 display: PlasmaComponents3.AbstractButton.IconOnly

@@ -11,6 +11,8 @@ KCM.SimpleKCM {
     property int cfg_updateIntervalDefault
     property string cfg_compactMode
     property string cfg_compactModeDefault
+    property string cfg_displayStyle
+    property string cfg_displayStyleDefault
     property bool cfg_showOutOfRange
     property bool cfg_showOutOfRangeDefault
     property string cfg_desktopLayout
@@ -19,20 +21,38 @@ KCM.SimpleKCM {
     property bool cfg_showTitleDefault
 
     readonly property var modes: [
-        { value: "auto", text: i18n("Automatic (all if up to 3 devices, otherwise the lowest)") },
+        { value: "auto", text: i18n("Automatic (all devices)") },
         { value: "all", text: i18n("All devices") },
         { value: "lowest", text: i18n("Lowest only") },
         { value: "icon", text: i18n("Icon only") }
     ]
 
     readonly property var desktopLayouts: [
-        { value: "auto", text: i18n("Automatic (by widget size)") },
+        { value: "auto", text: i18n("Every device") },
         { value: "gauge", text: i18n("Gauge (lowest device, others as chips)") },
         { value: "list", text: i18n("List") },
         { value: "grid", text: i18n("Grid of gauges") }
     ]
 
+    readonly property var displayStyles: [
+        { value: "rings", text: i18n("Circles (gauge)") },
+        { value: "bars", text: i18n("Bars") }
+    ]
+
     Kirigami.FormLayout {
+        QQC2.ComboBox {
+            Kirigami.FormData.label: i18n("Battery style:")
+            Layout.preferredWidth: Kirigami.Units.gridUnit * 22
+            model: page.displayStyles
+            textRole: "text"
+            valueRole: "value"
+            currentIndex: Math.max(0, page.displayStyles.findIndex(s => s.value === page.cfg_displayStyle))
+            onActivated: {
+                page.cfg_displayStyle = currentValue
+                page.cfg_desktopLayout = "auto"
+            }
+        }
+
         QQC2.SpinBox {
             id: intervalSpin
             Kirigami.FormData.label: i18n("Refresh every:")
@@ -58,7 +78,7 @@ KCM.SimpleKCM {
         }
 
         QQC2.CheckBox {
-            Kirigami.FormData.label: i18n("Popup and desktop:")
+            Kirigami.FormData.label: i18n("Devices:")
             text: i18n("Show devices that are out of range")
             checked: page.cfg_showOutOfRange
             onToggled: page.cfg_showOutOfRange = checked
@@ -66,6 +86,7 @@ KCM.SimpleKCM {
 
         QQC2.ComboBox {
             Kirigami.FormData.label: i18n("Desktop layout:")
+            enabled: page.cfg_displayStyle !== "bars"
             Layout.preferredWidth: Kirigami.Units.gridUnit * 22
             model: page.desktopLayouts
             textRole: "text"

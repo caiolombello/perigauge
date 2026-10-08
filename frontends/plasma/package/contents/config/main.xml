@@ -14,6 +14,10 @@
       <label>Panel display mode: auto, all, lowest or icon</label>
       <default>auto</default>
     </entry>
+    <entry name="displayStyle" type="String">
+      <label>Battery display style: rings or bars</label>
+      <default>rings</default>
+    </entry>
     <entry name="showOutOfRange" type="Bool">
       <label>Show devices that are out of range</label>
       <default>true</default>

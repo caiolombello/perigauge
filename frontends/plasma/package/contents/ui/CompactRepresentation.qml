@@ -58,12 +58,16 @@ MouseArea {
                 Layout.alignment: Qt.AlignCenter
                 Layout.fillWidth: compact.vertical
                 vertical: compact.vertical
+                displayStyle: compact.host.displayStyle
                 iconName: modelData.icon
                 text: modelData.text
                 severity: modelData.severity
                 charging: modelData.charging
                 stale: modelData.stale
-                accessibleName: modelData.name + " " + modelData.text
+                absent: modelData.absent === true
+                percent: modelData.pct
+                estimated: modelData.estimated === true
+                accessibleName: modelData.description || modelData.name + " " + modelData.text
             }
         }
     }
