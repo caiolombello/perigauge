@@ -78,14 +78,14 @@ TPL = r'''<!doctype html>
     <a class="btn btn-ghost" href="https://github.com/caiolombello/perigauge">@@gh@@</a>
    </div>
   </div>
-  <figure class="concept" aria-labelledby="concept-cap">
-   <span class="concept-tag">@@concepttag@@</span>
-   <div role="list" aria-label="@@conceptlist@@">
-    <div class="dev" role="listitem"><span class="dev-name">@@mouse@@</span>@@s_ok@@ <span class="bar s-ok" role="img" aria-label="@@mouse@@ 82%"><span style="width:82%"></span></span></div>
-    <div class="dev" role="listitem"><span class="dev-name">@@kb@@</span>@@s_warn@@ <span class="bar s-warn" role="img" aria-label="@@kb@@ 18%"><span style="width:18%"></span></span></div>
-    <div class="dev" role="listitem"><span class="dev-name">@@hp@@</span>@@s_chg@@ <span class="bar s-charging" role="img" aria-label="@@hp@@ 45%"><span style="width:45%"></span></span></div>
+  <figure class="product-shot" aria-labelledby="shot-caption">
+   <div class="shot-controls" role="group" aria-label="@@shot_styles@@" hidden>
+    <button type="button" aria-pressed="true" data-shot="@@root@@assets/perigauge-popup-rings.png" data-shot-alt="@@shot_rings_alt@@">@@shot_rings@@</button>
+    <button type="button" aria-pressed="false" data-shot="@@root@@assets/perigauge-popup-bars.png" data-shot-alt="@@shot_bars_alt@@">@@shot_bars@@</button>
    </div>
-   <figcaption id="concept-cap">@@conceptcap@@</figcaption>
+   <img id="product-shot" src="@@root@@assets/perigauge-popup-rings.png" alt="@@shot_rings_alt@@" width="434" height="550" fetchpriority="high" decoding="async">
+   <figcaption id="shot-caption">@@shot_caption@@</figcaption>
+   <noscript><p class="shot-fallback"><a href="@@root@@assets/perigauge-popup-bars.png">@@shot_bars_link@@</a></p></noscript>
   </figure>
  </div>
  <div class="wrap">
@@ -221,9 +221,11 @@ PT = dict(
  h1="A bateria do mouse, do teclado e dos fones, no seu painel.",
  lead="PeriGauge mostra um medidor por dispositivo no painel, na área de trabalho e num popup, e avisa antes de acabar. Escolha gauge circular ou barras, incluindo fone esquerdo, direito e estojo. Um único binário em Rust, tudo local: sem Solaar, sem rede, sem telemetria.",
  cta1="Ver instalação (pré-alpha)", cta2="Dispositivos suportados", gh="Código no GitHub", releases="Releases",
- concepttag="Conceito — não é screenshot", conceptlist="Dispositivos (valores fictícios)",
- mouse="Mouse", kb="Teclado", hp="Fones",
- conceptcap="Ilustração conceitual do popup, com dispositivos e valores fictícios.",
+ shot_styles="Estilo de exibição", shot_rings="Gauge", shot_bars="Barras",
+ shot_rings_alt="PeriGauge em gauge: Keychron M6 41%, Galaxy Buds3 Pro esquerdo 83%, direito 80% e estojo 79%.",
+ shot_bars_alt="PeriGauge em barras: Keychron M6 41%, Galaxy Buds3 Pro esquerdo 83%, direito 80% e estojo 79%.",
+ shot_caption="Interface Qt/QML do PeriGauge no KDE Plasma, com leituras reais de um Keychron M6 e Galaxy Buds3 Pro. Capturado em 8 de outubro de 2026.",
+ shot_bars_link="Ver captura no estilo barras",
  legendh="Como os estados aparecem",
  e1="Dispositivos", h_dev="O que funciona hoje, e com que evidência",
  dev_lead="Separamos o que foi testado em hardware do que ainda está em desenvolvimento. Nenhum dispositivo é listado como suportado sem indicar o nível de evidência.",
@@ -236,7 +238,7 @@ PT = dict(
  ev_v="Verificado em hardware", ev_d="Em desenvolvimento", ev_g="Genérico / esperado",
  n_m6="Lido de um M6 real pelo receptor Ultra-Link 8K.",
  n_lg="Testes com fixtures; hardware pendente.",
- n_bud="Leituras de fone esquerdo, direito e estojo verificadas em hardware.",
+ n_bud="Leituras e atualizações de bateria verificadas via Bluetooth em um aparelho real: fone esquerdo, direito e estojo, quando informado pelo dispositivo.",
  gen_dev="Qualquer dispositivo que o UPower/BlueZ já reporte", gen_conn="Bluetooth / USB",
  gen_back="UPower e BlueZ (power_supply do kernel, BLE Battery Service, HFP)",
  n_gen="Depende do que o dispositivo reporta; não é garantia por modelo.",
@@ -267,7 +269,7 @@ PT = dict(
  m2h="Plasmoid KDE Plasma 6", m2="Baterias sempre à vista no painel e na área de trabalho; popup com o mesmo estilo do painel.",
  m3h="Extensão GNOME Shell", m3="Planejada para depois do plasmoid.",
  m4h="Mais dispositivos", m4="Mais periféricos conforme houver hardware para verificar. Cada um com seu nível de evidência.",
- foot="PeriGauge · pré-alpha · local-first. Ilustrações são conceitos, não screenshots.",
+ foot="PeriGauge · pré-alpha · local-first.",
  langlinks='<a href="./" lang="pt-BR" hreflang="pt-BR" aria-current="page">Português</a><a href="en/" lang="en" hreflang="en">English</a>',
 )
 EN = dict(PT)
@@ -285,9 +287,11 @@ EN.update(
  h1="Your mouse, keyboard and headphone battery, right in your panel.",
  lead="PeriGauge shows a meter for each device in the panel, on the desktop and in a popup, and warns you before they run out. Choose circular gauges or bars, including left bud, right bud and case. A single Rust binary, fully local: no Solaar, no network, no telemetry.",
  cta1="See install (pre-alpha)", cta2="Supported devices", gh="Source on GitHub", releases="Releases",
- concepttag="Concept — not a screenshot", conceptlist="Devices (fictional values)",
- mouse="Mouse", kb="Keyboard", hp="Headphones",
- conceptcap="Conceptual illustration of the popup, with fictional devices and values.",
+ shot_styles="Display style", shot_rings="Gauge", shot_bars="Bars",
+ shot_rings_alt="PeriGauge gauges: Keychron M6 41%, Galaxy Buds3 Pro left 83%, right 80% and case 79%.",
+ shot_bars_alt="PeriGauge bars: Keychron M6 41%, Galaxy Buds3 Pro left 83%, right 80% and case 79%.",
+ shot_caption="PeriGauge Qt/QML interface on KDE Plasma, with real readings from a Keychron M6 and Galaxy Buds3 Pro. Captured October 8, 2026.",
+ shot_bars_link="View the bar-style screenshot",
  legendh="How states are shown",
  e1="Devices", h_dev="What works today, and with what evidence",
  dev_lead="We separate what was tested on hardware from what is still in development. No device is listed as supported without its evidence level.",
@@ -300,7 +304,7 @@ EN.update(
  ev_v="Verified on hardware", ev_d="In development", ev_g="Generic / expected",
  n_m6="Read from a real M6 through the Ultra-Link 8K receiver.",
  n_lg="Fixture-based tests; hardware pending.",
- n_bud="Left bud, right bud and case readings verified on hardware.",
+ n_bud="Battery readings and updates verified over Bluetooth on a real device: left bud, right bud and case, when reported by the device.",
  gen_dev="Any device UPower/BlueZ already reports", gen_conn="Bluetooth / USB",
  gen_back="UPower and BlueZ (kernel power_supply, BLE Battery Service, HFP)",
  n_gen="Depends on what the device reports; not a per-model guarantee.",
@@ -331,16 +335,12 @@ EN.update(
  m2h="KDE Plasma 6 plasmoid", m2="Always-visible batteries in the panel and on the desktop; popup follows the panel style.",
  m3h="GNOME Shell extension", m3="Planned for after the plasmoid.",
  m4h="More devices", m4="More peripherals as hardware is available to verify. Each with its own evidence level.",
- foot="PeriGauge · pre-alpha · local-first. Illustrations are concepts, not screenshots.",
+ foot="PeriGauge · pre-alpha · local-first.",
  langlinks='<a href="../" lang="pt-BR" hreflang="pt-BR">Português</a><a href="./" lang="en" hreflang="en" aria-current="page">English</a>',
 )
 for L, path in ((PT, DOCS/"index.html"), (EN, DOCS/"en"/"index.html")):
     L = dict(L)
-    L["s_ok"] = st("ok", "Bom 82%" if L is PT or L["lang"]=="pt-BR" else "Good 82%")
     pt = L["lang"] == "pt-BR"
-    L["s_ok"] = st("ok", "Bom · 82%" if pt else "Good · 82%")
-    L["s_warn"] = st("warn", "Baixa · 18%" if pt else "Low · 18%")
-    L["s_chg"] = st("charging", "Carregando · 45%" if pt else "Charging · 45%")
     L["legend"] = "".join(f"<li>{st(k, t)}</li>" for k, t in (
         ("ok", "Bom" if pt else "Good"), ("warn", "Baixa" if pt else "Low"), ("critical", "Crítica" if pt else "Critical"),
         ("charging", "Carregando" if pt else "Charging"), ("stale", "Leitura antiga" if pt else "Stale reading")))

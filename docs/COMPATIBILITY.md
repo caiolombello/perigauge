@@ -20,7 +20,7 @@
 | Logitech MX Keys | Bluetooth | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
 | Logitech MX Master 3S | Receptor Bolt | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
 | Logitech MX Master 3S | Bluetooth | HID++ 2.0 direto (sem Solaar) | Nível de bateria | Em desenvolvimento | Testes com fixtures; hardware pendente. |
-| Samsung Galaxy Buds3 Pro | Bluetooth | Protocolo SPP da Samsung | Bateria do fone esquerdo, do direito e do estojo | **Verificado em hardware** | Leitura real via backend `galaxy-buds`; verificado no KDE Plasma 6.6 / Ubuntu 26.04. |
+| Samsung Galaxy Buds3 Pro | Bluetooth | Protocolo SPP da Samsung | Bateria do fone esquerdo, do direito e do estojo, quando informado | **Verificado em hardware** | Leituras e atualizações reais via backend `galaxy-buds`; verificado no KDE Plasma 6.6 / Ubuntu 26.04 em 08/10/2026. |
 | Qualquer dispositivo que o UPower/BlueZ já reporte | Bluetooth / USB | UPower e BlueZ: `power_supply` do kernel, BLE Battery Service, HFP | Nível reportado pelo dispositivo | Genérico / esperado | Depende do dispositivo; não é garantia por modelo. |
 
 ## Notificações / Notifications

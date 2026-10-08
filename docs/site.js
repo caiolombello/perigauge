@@ -1,5 +1,19 @@
-// Melhoria progressiva: botões de copiar comandos. Sem rede, sem armazenamento, sem rastreamento.
+// Melhoria progressiva: capturas e cópia de comandos. Sem rede externa ou rastreamento.
 (() => {
+  const screenshot = document.getElementById("product-shot");
+  const controls = document.querySelector(".shot-controls");
+  if (screenshot && controls) {
+    const buttons = controls.querySelectorAll("[data-shot]");
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        screenshot.src = button.dataset.shot;
+        screenshot.alt = button.dataset.shotAlt;
+        for (const other of buttons) other.setAttribute("aria-pressed", String(other === button));
+      });
+    }
+    controls.hidden = false;
+  }
+
   if (!navigator.clipboard || !window.isSecureContext) return;
   for (const button of document.querySelectorAll("[data-copy-target]")) {
     const source = document.getElementById(button.dataset.copyTarget);

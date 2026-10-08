@@ -69,14 +69,14 @@
     <a class="btn btn-ghost" href="https://github.com/caiolombello/perigauge">Código no GitHub</a>
    </div>
   </div>
-  <figure class="concept" aria-labelledby="concept-cap">
-   <span class="concept-tag">Conceito — não é screenshot</span>
-   <div role="list" aria-label="Dispositivos (valores fictícios)">
-    <div class="dev" role="listitem"><span class="dev-name">Mouse</span><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Bom · 82%</span> <span class="bar s-ok" role="img" aria-label="Mouse 82%"><span style="width:82%"></span></span></div>
-    <div class="dev" role="listitem"><span class="dev-name">Teclado</span><span class="state s-warn"><svg class="" aria-hidden="true" focusable="false"><use href="#i-warn"/></svg>Baixa · 18%</span> <span class="bar s-warn" role="img" aria-label="Teclado 18%"><span style="width:18%"></span></span></div>
-    <div class="dev" role="listitem"><span class="dev-name">Fones</span><span class="state s-charging"><svg class="" aria-hidden="true" focusable="false"><use href="#i-bolt"/></svg>Carregando · 45%</span> <span class="bar s-charging" role="img" aria-label="Fones 45%"><span style="width:45%"></span></span></div>
+  <figure class="product-shot" aria-labelledby="shot-caption">
+   <div class="shot-controls" role="group" aria-label="Estilo de exibição" hidden>
+    <button type="button" aria-pressed="true" data-shot="assets/perigauge-popup-rings.png" data-shot-alt="PeriGauge em gauge: Keychron M6 41%, Galaxy Buds3 Pro esquerdo 83%, direito 80% e estojo 79%.">Gauge</button>
+    <button type="button" aria-pressed="false" data-shot="assets/perigauge-popup-bars.png" data-shot-alt="PeriGauge em barras: Keychron M6 41%, Galaxy Buds3 Pro esquerdo 83%, direito 80% e estojo 79%.">Barras</button>
    </div>
-   <figcaption id="concept-cap">Ilustração conceitual do popup, com dispositivos e valores fictícios.</figcaption>
+   <img id="product-shot" src="assets/perigauge-popup-rings.png" alt="PeriGauge em gauge: Keychron M6 41%, Galaxy Buds3 Pro esquerdo 83%, direito 80% e estojo 79%." width="434" height="550" fetchpriority="high" decoding="async">
+   <figcaption id="shot-caption">Interface Qt/QML do PeriGauge no KDE Plasma, com leituras reais de um Keychron M6 e Galaxy Buds3 Pro. Capturado em 8 de outubro de 2026.</figcaption>
+   <noscript><p class="shot-fallback"><a href="assets/perigauge-popup-bars.png">Ver captura no estilo barras</a></p></noscript>
   </figure>
  </div>
  <div class="wrap">
@@ -97,7 +97,7 @@
    <tbody>
     <tr><th scope="row">Keychron M6</th><td>Receptor Keychron Ultra-Link 8K</td><td>Protocolo HID de fornecedor</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verificado em hardware</span></td><td>Lido de um M6 real pelo receptor Ultra-Link 8K.</td></tr>
     <tr><th scope="row">Logitech MX Keys · MX Master 3S</th><td>Receptor Bolt ou Bluetooth</td><td>HID++ 2.0 direto (sem Solaar)</td><td><span class="state s-warn"><svg class="" aria-hidden="true" focusable="false"><use href="#i-dev"/></svg>Em desenvolvimento</span></td><td>Testes com fixtures; hardware pendente.</td></tr>
-    <tr><th scope="row">Samsung Galaxy Buds3 Pro</th><td>Bluetooth</td><td>Protocolo SPP da Samsung</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verificado em hardware</span></td><td>Leituras de fone esquerdo, direito e estojo verificadas em hardware.</td></tr>
+    <tr><th scope="row">Samsung Galaxy Buds3 Pro</th><td>Bluetooth</td><td>Protocolo SPP da Samsung</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verificado em hardware</span></td><td>Leituras e atualizações de bateria verificadas via Bluetooth em um aparelho real: fone esquerdo, direito e estojo, quando informado pelo dispositivo.</td></tr>
     <tr><th scope="row">Qualquer dispositivo que o UPower/BlueZ já reporte</th><td>Bluetooth / USB</td><td>UPower e BlueZ (power_supply do kernel, BLE Battery Service, HFP)</td><td><span class="state s-stale"><svg class="" aria-hidden="true" focusable="false"><use href="#i-gen"/></svg>Genérico / esperado</span></td><td>Depende do que o dispositivo reporta; não é garantia por modelo.</td></tr>
    </tbody>
   </table>
@@ -177,7 +177,7 @@ cd perigauge-0.1.0-alpha.2
 
 <footer>
  <div class="wrap foot">
-  <p>PeriGauge · pré-alpha · local-first. Ilustrações são conceitos, não screenshots.</p>
+  <p>PeriGauge · pré-alpha · local-first.</p>
   <p><a href="https://github.com/caiolombello/perigauge">Código no GitHub</a> · <a href="https://github.com/caiolombello/perigauge/releases">Releases</a> · <a href="COMPATIBILITY.md">COMPATIBILITY.md</a></p>
  </div>
 </footer>
