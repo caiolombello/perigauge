@@ -1,0 +1,17 @@
+# PeriGauge: let the active local session read battery status from supported
+# receivers and Logitech Bluetooth devices without root (uaccess ACL).
+# uaccess grants read AND write on these hidraw nodes; PeriGauge itself only
+# sends identity and battery queries. See SECURITY.md before installing.
+ACTION=="remove", GOTO="perigauge_end"
+SUBSYSTEM!="hidraw", GOTO="perigauge_end"
+
+# Keychron Ultra-Link 8K: vendor interface (4) only.
+ENV{ID_VENDOR_ID}=="3434", ENV{ID_MODEL_ID}=="d028", ENV{ID_USB_INTERFACE_NUM}=="04", TAG+="uaccess", GOTO="perigauge_end"
+
+# Logitech Bolt, Unifying, nano and Lightspeed receivers: HID++ interface (2) only.
+ENV{ID_VENDOR_ID}=="046d", ENV{ID_MODEL_ID}=="c548|c52b|c532|c534|c539|c53a|c53f|c547|c54d", ENV{ID_USB_INTERFACE_NUM}=="02", TAG+="uaccess", GOTO="perigauge_end"
+
+# Logitech Bluetooth devices expose HID++ on their single hidraw node.
+KERNELS=="0005:046D:*", TAG+="uaccess"
+
+LABEL="perigauge_end"

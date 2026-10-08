@@ -1,0 +1,18 @@
+[Unit]
+Description=PeriGauge peripheral battery monitor
+Documentation=https://caiolombello.github.io/perigauge/
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/perigauge daemon
+Restart=on-failure
+RestartSec=15
+NoNewPrivileges=yes
+LockPersonality=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+MemoryDenyWriteExecute=yes
+
+[Install]
+WantedBy=graphical-session.target

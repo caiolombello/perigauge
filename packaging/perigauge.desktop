@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=PeriGauge
+Comment=Battery levels of wireless peripherals
+Comment[pt_BR]=Bateria de periféricos sem fio
+Exec=perigauge status
+Icon=perigauge
+Terminal=true
+NoDisplay=true
+Categories=System;Monitor;
