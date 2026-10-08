@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.0-alpha.2 — 2026-10-08
+
+- Always-visible battery meters for each device on the desktop and panel,
+  including separate left bud, right bud and case readings.
+- Switch between circular gauges and battery bars from the widget menu,
+  settings or popup header. Each widget keeps its own preference; the panel
+  and its popup use the same style.
+- Dedicated mouse, keyboard, earbuds and case icons. Unknown, estimated,
+  stale and out-of-range readings remain identifiable in both styles.
+- The desktop card stays expanded; automatic panel mode shows every device.
+  When enabled, out-of-range readings also keep the tray applet visible.
+- Galaxy Buds3 Pro battery readings (left, right and case) verified on
+  hardware over Bluetooth, alongside the Keychron M6 receiver. Logitech
+  hardware validation remains pending.
+
 ## 0.1.0-alpha.1 — 2026-10-08
 
 First PeriGauge build, replacing the Python `perif-battery` helper.

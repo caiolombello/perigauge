@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PeriGauge — bateria dos seus periféricos no Linux</title>
-<meta name="description" content="Monitor de bateria de mouses, teclados e fones Bluetooth para o desktop Linux. Núcleo em Rust, local, sem rede e sem telemetria. Pré-alpha 0.1.0-alpha.1.">
+<meta name="description" content="Monitor de bateria de mouses, teclados e fones Bluetooth para o desktop Linux. Núcleo em Rust, local, sem rede e sem telemetria. Pré-alpha 0.1.0-alpha.2.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F6F7FC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1124" media="(prefers-color-scheme: dark)">
@@ -16,12 +16,12 @@
 <meta property="og:site_name" content="PeriGauge">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:title" content="PeriGauge — bateria dos seus periféricos no Linux">
-<meta property="og:description" content="Monitor de bateria de mouses, teclados e fones Bluetooth para o desktop Linux. Núcleo em Rust, local, sem rede e sem telemetria. Pré-alpha 0.1.0-alpha.1.">
+<meta property="og:description" content="Monitor de bateria de mouses, teclados e fones Bluetooth para o desktop Linux. Núcleo em Rust, local, sem rede e sem telemetria. Pré-alpha 0.1.0-alpha.2.">
 <meta property="og:image" content="https://caiolombello.github.io/perigauge/assets/perigauge-social-card.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="PeriGauge: bateria dos periféricos no Linux. Pré-alpha 0.1.0-alpha.1.">
+<meta property="og:image:alt" content="PeriGauge: bateria dos periféricos no Linux. Pré-alpha 0.1.0-alpha.2.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="style.css">
@@ -40,7 +40,7 @@
  <symbol id="i-gen" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.1"/></symbol>
 </svg>
 
-<p class="prerelease"><span class="wrap" style="display:block"><strong>Pré-alpha 0.1.0-alpha.1.</strong> Verificado em hardware só com o Keychron M6; Logitech e Galaxy Buds ainda dependem de validação em hardware.</span></p>
+<p class="prerelease"><span class="wrap" style="display:block"><strong>Pré-alpha 0.1.0-alpha.2.</strong> Leituras verificadas em hardware com Keychron M6 e Galaxy Buds3 Pro; Logitech ainda depende de validação em hardware.</span></p>
 
 <header class="site-header">
  <div class="wrap header-inner">
@@ -62,7 +62,7 @@
   <div>
    <span class="badge">Pré-alpha · Linux · KDE Plasma 6 primeiro</span>
    <h1>A bateria do mouse, do teclado e dos fones, no seu painel.</h1>
-   <p class="lead">PeriGauge mostra o nível de bateria dos seus periféricos Bluetooth no painel e num popup, e avisa antes de acabar. Um único binário em Rust, tudo local: sem Solaar, sem rede, sem telemetria.</p>
+   <p class="lead">PeriGauge mostra um medidor por dispositivo no painel, na área de trabalho e num popup, e avisa antes de acabar. Escolha gauge circular ou barras, incluindo fone esquerdo, direito e estojo. Um único binário em Rust, tudo local: sem Solaar, sem rede, sem telemetria.</p>
    <div class="actions">
     <a class="btn" href="#instalar">Ver instalação (pré-alpha)</a>
     <a class="btn btn-ghost" href="#dispositivos">Dispositivos suportados</a>
@@ -97,7 +97,7 @@
    <tbody>
     <tr><th scope="row">Keychron M6</th><td>Receptor Keychron Ultra-Link 8K</td><td>Protocolo HID de fornecedor</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verificado em hardware</span></td><td>Lido de um M6 real pelo receptor Ultra-Link 8K.</td></tr>
     <tr><th scope="row">Logitech MX Keys · MX Master 3S</th><td>Receptor Bolt ou Bluetooth</td><td>HID++ 2.0 direto (sem Solaar)</td><td><span class="state s-warn"><svg class="" aria-hidden="true" focusable="false"><use href="#i-dev"/></svg>Em desenvolvimento</span></td><td>Testes com fixtures; hardware pendente.</td></tr>
-    <tr><th scope="row">Samsung Galaxy Buds3 Pro</th><td>Bluetooth</td><td>Protocolo SPP da Samsung</td><td><span class="state s-warn"><svg class="" aria-hidden="true" focusable="false"><use href="#i-dev"/></svg>Em desenvolvimento</span></td><td>Fone esquerdo, direito e estojo.</td></tr>
+    <tr><th scope="row">Samsung Galaxy Buds3 Pro</th><td>Bluetooth</td><td>Protocolo SPP da Samsung</td><td><span class="state s-ok"><svg class="" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Verificado em hardware</span></td><td>Leituras de fone esquerdo, direito e estojo verificadas em hardware.</td></tr>
     <tr><th scope="row">Qualquer dispositivo que o UPower/BlueZ já reporte</th><td>Bluetooth / USB</td><td>UPower e BlueZ (power_supply do kernel, BLE Battery Service, HFP)</td><td><span class="state s-stale"><svg class="" aria-hidden="true" focusable="false"><use href="#i-gen"/></svg>Genérico / esperado</span></td><td>Depende do que o dispositivo reporta; não é garantia por modelo.</td></tr>
    </tbody>
   </table>
@@ -145,11 +145,11 @@
   <h2>Instalação (pré-alpha)</h2>
   <p class="lead">Binário para Linux x86_64 com glibc 2.39 ou superior, testado no Ubuntu 26.04 com KDE Plasma 6. Confira o checksum e simule antes de instalar; tudo vai para o seu usuário, sem sudo. Para compilar do código-fonte, veja o README.</p>
   <div class="code"><pre id="cmds"><code># baixar a release e conferir o checksum
-curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.1/perigauge-0.1.0-alpha.1-x86_64-linux.tar.gz
-curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.1/SHA256SUMS
+curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.2/perigauge-0.1.0-alpha.2-x86_64-linux.tar.gz
+curl -LO https://github.com/caiolombello/perigauge/releases/download/v0.1.0-alpha.2/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar xf perigauge-0.1.0-alpha.1-x86_64-linux.tar.gz
-cd perigauge-0.1.0-alpha.1
+tar xf perigauge-0.1.0-alpha.2-x86_64-linux.tar.gz
+cd perigauge-0.1.0-alpha.2
 # simular; depois instalar com o serviço de notificações
 ./install.sh --dry-run
 ./install.sh --enable-service</code></pre></div>
@@ -166,8 +166,8 @@ cd perigauge-0.1.0-alpha.1
   <p class="eyebrow">Roadmap</p>
   <h2>O que vem a seguir</h2>
   <ul class="grid">
-   <li class="card"><h3>0.1.0-alpha.1</h3><p>Primeiro pré-lançamento, publicado em outubro de 2026.</p></li>
-   <li class="card"><h3>Plasmoid KDE Plasma 6</h3><p>Widget no painel (ícone e popup) e na área de trabalho (medidor, lista ou grade).</p></li>
+   <li class="card"><h3>0.1.0-alpha.2</h3><p>Medidores por dispositivo e alternância entre gauge e barras. Publicado em outubro de 2026.</p></li>
+   <li class="card"><h3>Plasmoid KDE Plasma 6</h3><p>Baterias sempre à vista no painel e na área de trabalho; popup com o mesmo estilo do painel.</p></li>
    <li class="card"><h3>Extensão GNOME Shell</h3><p>Planejada para depois do plasmoid.</p></li>
    <li class="card"><h3>Mais dispositivos</h3><p>Mais periféricos conforme houver hardware para verificar. Cada um com seu nível de evidência.</p></li>
   </ul>
