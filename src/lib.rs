@@ -4,6 +4,7 @@ pub mod backends;
 pub mod bus;
 pub mod collect;
 pub mod config;
+pub mod export;
 pub mod hidraw;
 pub mod model;
 pub mod notify;

@@ -137,6 +137,7 @@ impl Collector {
                 return snapshot;
             }
         };
+        crate::export::collection_start(&guard);
         let previous = load_snapshot();
         if let (Some(max_age), Some(stored)) = (reuse_within, &previous) {
             if now() - stored.generated_at < max_age {
@@ -167,8 +168,9 @@ impl Collector {
             devices: state::merge(&previous, fresh, now, config),
             issues,
         };
-        if let Err(error) = save_snapshot(&snapshot) {
-            eprintln!("perigauge: state.json: {error}");
+        match save_snapshot(&snapshot) {
+            Ok(()) => crate::export::collection_saved(&guard, &snapshot, config.interval_seconds),
+            Err(error) => eprintln!("perigauge: state.json: {error}"),
         }
         drop(guard);
         snapshot

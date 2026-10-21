@@ -1,0 +1,15 @@
+{
+  "formatVersion": "0.1-experimental",
+  "id": "io.github.caiolombello.perigauge",
+  "name": "PeriGauge",
+  "description": "Passive peripheral battery readings explicitly exported by PeriGauge.",
+  "author": "PeriGauge contributors",
+  "license": "MIT",
+  "version": "0.1.0",
+  "origin": "https://github.com/caiolombello/perigauge",
+  "renderer": "peripheral-battery",
+  "source": {
+    "namespace": "perigauge",
+    "formatVersion": "0.1-experimental"
+  }
+}

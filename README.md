@@ -110,6 +110,65 @@ name = "Keychron M6"       # the receiver does not report the model
 
 Device ids come from `perigauge status --json`.
 
+## Optional passive Orla export (experimental)
+
+PeriGauge owns collection and export permission. Installing PeriGauge or the
+JSON package in `contrib/orla/perigauge.orla-addon.json` enables neither export
+nor Orla activation. Orla activation is a separate explicit host action.
+
+```sh
+perigauge export orla enable
+perigauge export orla status
+perigauge export orla disable
+```
+
+These commands only manage consent and bounded export metadata; they never
+collect devices, read the private battery cache, or contact buses/network.
+`status` prints `enabled`, `exportPresent` and `exportBytes` (null if absent).
+Mutation refuses immediately with `export-busy` if normal collection holds
+`collect.lock`; retry once that collection finishes. No process is terminated.
+Enable records consent and removes any old export, then waits for the next
+normal collection. It never presents cached status as a new observation.
+Disable acknowledges success only after consent is off and the export removed.
+
+Consent is a strict, private, separate JSON object at
+`$XDG_CONFIG_HOME/perigauge/exports/orla.json`:
+`{"formatVersion":"0.1-experimental","enabled":true}`. Missing, malformed,
+unknown-key, duplicate-key or unreadable consent is disabled. These commands
+never rewrite `config.toml`, including comments and unknown preferences.
+An absolute XDG override is used; otherwise HOME/.config and HOME/.local/state
+are the configuration/state bases. Export directories are never created while
+permission is absent/off. Any old export observed under the collection lock
+is removed. Existing producer/export directories must be owned, mode `0700`;
+new files are `0600`, and symlink/special-file paths are refused.
+
+The fixed export is
+`$XDG_STATE_HOME/perigauge/exports/orla-peripherals-v1.json`. It uses
+`formatVersion: "0.1-experimental"`, `producer: "perigauge"`, camelCase keys
+and millisecond timestamps. It contains generic kinds/links, presence/staleness,
+observation time, battery state and up to three unique left/right/case components;
+no device IDs, names, aliases, backend identifiers, errors or issue details.
+Devices hidden in either the collected snapshot or freshly parsed current
+configuration are omitted. Malformed/unreadable current configuration fails the
+export closed rather than exposing devices through default settings.
+
+Publication follows a genuine normal collection and successful private cache
+save, under the existing collection lock. Reuse and lock/save/export failures
+never renew a lease. Export errors use finite diagnostic codes and do not stop
+collection or notifications. Limits are 128 devices and 65,536 serialized bytes;
+unsafe/oversized output is refused and the old export removed. Original collection
+and observation times are preserved. `expiresAtMs` is `generatedAtMs + 3000 *
+intervalSeconds` (10..3600 seconds). Absent/error/missing/future/old observations
+are stale. Coarse, zero, estimated, unknown and case-only readings stay distinct.
+The consumer must independently age both envelope and device observations,
+including while its transport is stalled; a clock rollback makes data unavailable.
+Removing a file cannot retract bytes a consumer already read.
+
+Uninstall revokes through the compatible installed binary before removing it,
+keeping unrelated preferences. Revocation failure aborts uninstall visibly.
+The package/schema/golden examples are experimental contract material, not an
+upstream acceptance, native integration or stable SDK guarantee.
+
 ## JSON contract
 
 `perigauge status --json` prints schema 1: `devices[]` with `id`, `name`,

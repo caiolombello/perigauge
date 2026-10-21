@@ -17,6 +17,7 @@ PeriGauge — bateria de periféricos sem fio / wireless peripheral batteries
 
 Uso / usage:
   perigauge status [--json] [--refresh]   níveis atuais / current levels
+  perigauge export orla enable|disable|status  exportação passiva / passive export
   perigauge daemon                        serviço de usuário com notificações
   perigauge doctor                        diagnóstico de acesso e backends
   perigauge notify-test                   envia uma notificação de teste
@@ -33,6 +34,7 @@ fn main() -> ExitCode {
     let flags = if args.is_empty() { &[][..] } else { &args[1..] };
     match command {
         "status" => status(flags),
+        "export" => export_command(flags),
         "daemon" => daemon(),
         "doctor" => doctor(),
         "notify-test" => notify_test(),
@@ -47,6 +49,41 @@ fn main() -> ExitCode {
         other => {
             eprintln!("perigauge: {}: {other}\n\n{HELP}", t("comando desconhecido", "unknown command"));
             ExitCode::from(2)
+        }
+    }
+}
+
+fn export_command(args: &[String]) -> ExitCode {
+    use perigauge::export::{Action, Paths, command};
+    let action = match args {
+        [target, action] if target == "orla" => match action.as_str() {
+            "enable" => Action::Enable,
+            "disable" => Action::Disable,
+            "status" => Action::Status,
+            _ => {
+                eprintln!("perigauge: export-usage");
+                return ExitCode::from(2);
+            }
+        },
+        _ => {
+            eprintln!("perigauge: export-usage");
+            return ExitCode::from(2);
+        }
+    };
+    match command(&Paths::system(), action) {
+        Ok(status) => match serde_json::to_string(&status) {
+            Ok(text) => {
+                println!("{text}");
+                ExitCode::SUCCESS
+            }
+            Err(_) => {
+                eprintln!("perigauge: export-invalid-data");
+                ExitCode::FAILURE
+            }
+        },
+        Err(error) => {
+            eprintln!("perigauge: {}", error.code());
+            ExitCode::FAILURE
         }
     }
 }
