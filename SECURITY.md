@@ -25,9 +25,10 @@ PeriGauge 0.1.0-alpha.1 is a pre-alpha with no production support guarantee.
 The default is off. A producer-operated `export orla enable` records separate
 JSON consent; normal collection alone may publish the fixed minimal export.
 Orla never runs producer commands, requests credentials or rewrites its config.
-The exported projection omits stable IDs, device names/aliases, backend details,
+The exported projection omits stable IDs, backend details,
 raw errors and issues, and filters hidden devices again immediately before
-publication. A malformed/unreadable main configuration fails export closed.
+publication. Device names/aliases are omitted unless the user separately ran
+`export orla enable --with-names`; plain `enable` withdraws them. A malformed/unreadable main configuration fails export closed.
 Original collection/observation times and a three-interval lease are preserved;
 new consent never refreshes old hardware readings. Consumers must age readings
 independently and discard expired data or data from a future/rolled-back clock.

@@ -17,7 +17,8 @@ PeriGauge — bateria de periféricos sem fio / wireless peripheral batteries
 
 Uso / usage:
   perigauge status [--json] [--refresh]   níveis atuais / current levels
-  perigauge export orla enable|disable|status  exportação passiva / passive export
+  perigauge export orla enable [--with-names]|disable|status
+                                          exportação passiva / passive export
   perigauge daemon                        serviço de usuário com notificações
   perigauge doctor                        diagnóstico de acesso e backends
   perigauge notify-test                   envia uma notificação de teste
@@ -56,6 +57,9 @@ fn main() -> ExitCode {
 fn export_command(args: &[String]) -> ExitCode {
     use perigauge::export::{Action, Paths, command};
     let action = match args {
+        [target, action, flag] if target == "orla" && action == "enable" && flag == "--with-names" => {
+            Action::EnableWithNames
+        }
         [target, action] if target == "orla" => match action.as_str() {
             "enable" => Action::Enable,
             "disable" => Action::Disable,

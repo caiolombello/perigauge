@@ -71,6 +71,9 @@ struct ExportDevice {
     observed_at_ms: Option<u64>,
     battery: ExportBattery,
     components: Vec<ExportComponent>,
+    /// Only with the separate names consent; omitted otherwise.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -104,10 +107,34 @@ fn milliseconds(seconds: f64) -> Option<u64> {
 /// Pure projection of an already collected snapshot, never a new observation.
 /// `current` is parsed afresh without Config::load's error-to-default fallback.
 pub fn project(snapshot: &Snapshot, current: &Config, interval: u64) -> Result<Vec<u8>> {
-    project_at(snapshot, current, interval, snapshot.generated_at)
+    project_at(snapshot, current, interval, snapshot.generated_at, false)
 }
 
-fn project_at(snapshot: &Snapshot, current: &Config, interval: u64, projection_time: f64) -> Result<Vec<u8>> {
+/// A display name Orla's text profile accepts: ASCII, Latin, Greek and Cyrillic
+/// letters and digits, ASCII punctuation and single spaces, at most 64 characters.
+/// Anything else is dropped rather than risking a rejected export.
+fn shared_name(name: &str) -> Option<String> {
+    let mut result = String::new();
+    for c in name.chars() {
+        let keep = c.is_ascii_graphic() || (c.is_alphanumeric() && (c as u32) <= 0x04FF);
+        if keep {
+            result.push(c);
+        } else if c.is_whitespace() && !result.is_empty() && !result.ends_with(' ') {
+            result.push(' ');
+        }
+    }
+    let result: String = result.trim_end().chars().take(64).collect();
+    let result = result.trim_end();
+    (!result.is_empty()).then(|| result.to_string())
+}
+
+fn project_at(
+    snapshot: &Snapshot,
+    current: &Config,
+    interval: u64,
+    projection_time: f64,
+    names: bool,
+) -> Result<Vec<u8>> {
     if !(10..=3600).contains(&interval) {
         return Err(Error::InvalidData);
     }
@@ -120,7 +147,8 @@ fn project_at(snapshot: &Snapshot, current: &Config, interval: u64, projection_t
     }
     let mut devices = Vec::new();
     for device in &snapshot.devices {
-        if device.hidden || current.device(&device.id).hidden {
+        let overrides = current.device(&device.id);
+        if device.hidden || overrides.hidden {
             continue;
         }
         if devices.len() == 128 {
@@ -161,6 +189,10 @@ fn project_at(snapshot: &Snapshot, current: &Config, interval: u64, projection_t
                 estimated: device.battery.estimated,
             },
             components,
+            // The current alias wins, as it does for hiding.
+            name: names
+                .then(|| overrides.name.as_deref().filter(|name| !name.trim().is_empty()).unwrap_or(&device.name))
+                .and_then(shared_name),
         });
     }
     let bytes = serde_json::to_vec(&Envelope {
@@ -197,11 +229,16 @@ impl Paths {
 struct Consent {
     format_version: String,
     enabled: bool,
+    /// Separate choice to share device names; absent means off.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    names: bool,
 }
 
 #[derive(Clone, Copy)]
 pub enum Action {
     Enable,
+    /// Enable and also share device names (aliases from config.toml win).
+    EnableWithNames,
     Disable,
     Status,
 }
@@ -210,6 +247,7 @@ pub enum Action {
 #[serde(rename_all = "camelCase")]
 pub struct Status {
     pub enabled: bool,
+    pub names: bool,
     pub export_present: bool,
     pub export_bytes: Option<u64>,
 }
@@ -419,19 +457,24 @@ impl Dir {
     }
 }
 
-fn enabled(paths: &Paths) -> bool {
-    let read = || -> Result<bool> {
-        let Some(config) = Dir::open(&paths.config, false)? else { return Ok(false) };
-        let Some(exports) = config.exports(false)? else { return Ok(false) };
-        let Some(bytes) = exports.read(CONSENT_FILE, 256, true)? else { return Ok(false) };
+/// The consent in force, if export is enabled; anything unreadable is off.
+fn consent(paths: &Paths) -> Option<Consent> {
+    let read = || -> Result<Option<Consent>> {
+        let Some(config) = Dir::open(&paths.config, false)? else { return Ok(None) };
+        let Some(exports) = config.exports(false)? else { return Ok(None) };
+        let Some(bytes) = exports.read(CONSENT_FILE, 256, true)? else { return Ok(None) };
         // Serde structs also accept positional arrays; consent must be a JSON object.
         if bytes.iter().find(|byte| !byte.is_ascii_whitespace()) != Some(&b'{') {
             return Err(Error::InvalidData);
         }
         let consent: Consent = serde_json::from_slice(&bytes).map_err(|_| Error::InvalidData)?;
-        Ok(consent.format_version == FORMAT && consent.enabled)
+        Ok((consent.format_version == FORMAT && consent.enabled).then_some(consent))
     };
-    read().unwrap_or(false)
+    read().ok().flatten()
+}
+
+fn enabled(paths: &Paths) -> bool {
+    consent(paths).is_some()
 }
 
 fn remove_export(paths: &Paths) -> Result<()> {
@@ -468,7 +511,13 @@ fn try_lock(paths: &Paths) -> Result<File> {
 }
 
 fn status(paths: &Paths) -> Result<Status> {
-    let mut status = Status { enabled: enabled(paths), export_present: false, export_bytes: None };
+    let current = consent(paths);
+    let mut status = Status {
+        enabled: current.is_some(),
+        names: current.is_some_and(|consent| consent.names),
+        export_present: false,
+        export_bytes: None,
+    };
     if let Some(state) = Dir::open(&paths.state, false)? {
         if let Some(exports) = state.exports(false)? {
             if let Some(file) = exports.file(EXPORT_FILE, libc::O_RDONLY)? {
@@ -492,7 +541,8 @@ pub fn command(paths: &Paths, action: Action) -> Result<Status> {
         return status(paths);
     }
     let _guard = try_lock(paths)?;
-    if matches!(action, Action::Enable) {
+    let enable = matches!(action, Action::Enable | Action::EnableWithNames);
+    if enable {
         // Consent never makes an older cached/exported observation look new.
         remove_export(paths)?;
     } else if !enabled(paths) {
@@ -503,14 +553,16 @@ pub fn command(paths: &Paths, action: Action) -> Result<Status> {
     }
     let config = Dir::open(&paths.config, true)?.ok_or(Error::Io)?;
     let exports = config.exports(true)?.ok_or(Error::Io)?;
-    let consent = Consent { format_version: FORMAT.into(), enabled: matches!(action, Action::Enable) };
+    let consent =
+        Consent { format_version: FORMAT.into(), enabled: enable, names: matches!(action, Action::EnableWithNames) };
     let bytes = serde_json::to_vec(&consent).map_err(|_| Error::InvalidData)?;
     exports.write(CONSENT_FILE, &bytes)?;
     if !consent.enabled {
         remove_export(paths)?;
     }
     let result = status(paths)?;
-    if result.enabled != consent.enabled || (!consent.enabled && result.export_present) {
+    let recorded = result.enabled == consent.enabled && result.names == consent.names;
+    if !recorded || (!consent.enabled && result.export_present) {
         return Err(Error::Io);
     }
     Ok(result)
@@ -526,14 +578,15 @@ fn observe_disabled(paths: &Paths) -> Result<()> {
 /// Call only while holding collect.lock and after a genuine pass + successful
 /// save_snapshot. All failures leave the collection/notifications usable.
 fn publish_after_save(paths: &Paths, snapshot: &Snapshot, interval: u64, publication_time: f64) -> Result<()> {
-    if !enabled(paths) {
+    let Some(granted) = consent(paths) else {
         return remove_export(paths);
-    }
+    };
     let result = (|| {
         let config = current_config(paths)?;
-        let bytes = project_at(snapshot, &config, interval, publication_time)?;
-        // Recheck after projection, immediately before creating any export dir.
-        if !enabled(paths) {
+        let bytes = project_at(snapshot, &config, interval, publication_time, granted.names)?;
+        // Recheck after projection, immediately before creating any export dir;
+        // names withdrawn meanwhile must not be published either.
+        if consent(paths).is_none_or(|now| granted.names && !now.names) {
             return remove_export(paths);
         }
         let state = Dir::open(&paths.state, true)?.ok_or(Error::Io)?;
@@ -844,6 +897,47 @@ mod export_tests {
         assert!(!owned.export().exists());
         command(&owned.paths, Action::Enable).unwrap();
         assert!(!owned.export().exists());
+    }
+
+    #[test]
+    fn export_names_are_separate_consent_alias_first_and_bounded() {
+        let at = sample().generated_at;
+        let named = |snapshot: &Snapshot, config: &Config| -> serde_json::Value {
+            serde_json::from_slice(&project_at(snapshot, config, 30, at, true).unwrap()).unwrap()
+        };
+        let mut snapshot = sample();
+        snapshot.devices[0].name = "  Mouse\tde   teste\u{7}™ 🎧 ".into();
+        assert!(value(&snapshot, &Config::default())["devices"][0].get("name").is_none());
+        assert_eq!(named(&snapshot, &Config::default())["devices"][0]["name"], "Mouse de teste");
+        for (source, shown) in [("Teclado Ação 2", Some("Teclado Ação 2")), ("🎧", None), ("   ", None)] {
+            snapshot.devices[0].name = source.into();
+            assert_eq!(named(&snapshot, &Config::default())["devices"][0]["name"].as_str(), shown);
+        }
+        snapshot.devices[0].name = "a".repeat(70);
+        assert_eq!(named(&snapshot, &Config::default())["devices"][0]["name"], "a".repeat(64));
+        let mut config = Config::default();
+        config.devices.insert(
+            "PRIVATE-ID".into(),
+            DeviceConfig { name: Some("Mouse do receptor".into()), ..DeviceConfig::default() },
+        );
+        assert_eq!(named(&snapshot, &config)["devices"][0]["name"], "Mouse do receptor");
+
+        let owned = Owned::new();
+        let status = command(&owned.paths, Action::EnableWithNames).unwrap();
+        assert!(status.enabled && status.names);
+        assert_eq!(
+            fs::read(owned.consent()).unwrap(),
+            br#"{"formatVersion":"0.1-experimental","enabled":true,"names":true}"#
+        );
+        owned.publish(&snapshot, 1000.2).unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&fs::read(owned.export()).unwrap()).unwrap();
+        assert_eq!(json["devices"][0]["name"], "a".repeat(64));
+        // Plain enable withdraws names; the next export has none.
+        let status = command(&owned.paths, Action::Enable).unwrap();
+        assert!(status.enabled && !status.names);
+        owned.publish(&snapshot, 1000.3).unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&fs::read(owned.export()).unwrap()).unwrap();
+        assert!(json["devices"][0].get("name").is_none());
     }
 
     #[test]
