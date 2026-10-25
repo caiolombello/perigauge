@@ -118,13 +118,21 @@ nor Orla activation. Orla activation is a separate explicit host action.
 
 ```sh
 perigauge export orla enable
+perigauge export orla enable --with-names   # also share device names
 perigauge export orla status
 perigauge export orla disable
 ```
 
+Device names are a separate choice: plain `enable` exports none, and running it
+again withdraws names given before. With `--with-names` each device carries a
+`name`, taken from the `config.toml` alias when there is one (useful for the
+Keychron receiver, which does not report the model). Names keep only ASCII,
+Latin, Greek and Cyrillic letters and digits, ASCII punctuation and single
+spaces, up to 64 characters; other characters are dropped.
+
 These commands only manage consent and bounded export metadata; they never
 collect devices, read the private battery cache, or contact buses/network.
-`status` prints `enabled`, `exportPresent` and `exportBytes` (null if absent).
+`status` prints `enabled`, `names`, `exportPresent` and `exportBytes` (null if absent).
 Mutation refuses immediately with `export-busy` if normal collection holds
 `collect.lock`; retry once that collection finishes. No process is terminated.
 Enable records consent and removes any old export, then waits for the next
@@ -133,7 +141,8 @@ Disable acknowledges success only after consent is off and the export removed.
 
 Consent is a strict, private, separate JSON object at
 `$XDG_CONFIG_HOME/perigauge/exports/orla.json`:
-`{"formatVersion":"0.1-experimental","enabled":true}`. Missing, malformed,
+`{"formatVersion":"0.1-experimental","enabled":true}`, plus `"names":true`
+when names are shared. Missing, malformed,
 unknown-key, duplicate-key or unreadable consent is disabled. These commands
 never rewrite `config.toml`, including comments and unknown preferences.
 An absolute XDG override is used; otherwise HOME/.config and HOME/.local/state
