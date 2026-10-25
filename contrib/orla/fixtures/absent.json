@@ -1,0 +1,1 @@
+{"formatVersion":"0.1-experimental","producer":"perigauge","producerVersion":"0.1.0-alpha.3","generatedAtMs":1000125,"expiresAtMs":1090125,"intervalSeconds":30,"devices":[{"kind":"mouse","link":"unknown","present":false,"stale":true,"observedAtMs":1000000,"battery":{"percent":0,"level":null,"charging":"unknown","estimated":false},"components":[]}]}

@@ -17,6 +17,9 @@ done
 config_home="${XDG_CONFIG_HOME:-${HOME}/.config}"
 data_home="${XDG_DATA_HOME:-${HOME}/.local/share}"
 state_home="${XDG_STATE_HOME:-${HOME}/.local/state}"
+# Match the binary's absolute-XDG-or-HOME fallback for consent and export.
+[[ "${config_home}" = /* ]] || config_home="${HOME}/.config"
+[[ "${state_home}" = /* ]] || state_home="${HOME}/.local/state"
 plasmoid_id="io.github.caiolombello.perigauge"
 
 run() {
@@ -31,6 +34,17 @@ run() {
 
 if command -v systemctl >/dev/null && systemctl --user cat perigauge.service >/dev/null 2>&1; then
     run systemctl --user disable --now perigauge.service || true
+fi
+# Serialize acknowledged revocation with any remaining collector before removing
+# the binary. Fail visibly on busy/unsafe paths; never purge other preferences.
+if [[ -e "${config_home}/perigauge/exports" || -L "${config_home}/perigauge/exports" \
+     || -e "${state_home}/perigauge/exports" || -L "${state_home}/perigauge/exports" ]]; then
+    if [[ -x "${HOME}/.local/bin/perigauge" ]]; then
+        run "${HOME}/.local/bin/perigauge" export orla disable
+    else
+        printf 'uninstall.sh: export-revoke-unavailable; revoke with a compatible PeriGauge binary first.\n' >&2
+        exit 1
+    fi
 fi
 if command -v kpackagetool6 >/dev/null && kpackagetool6 --type Plasma/Applet --list 2>/dev/null | grep -Fqx "${plasmoid_id}"; then
     run kpackagetool6 --type Plasma/Applet --remove "${plasmoid_id}"
